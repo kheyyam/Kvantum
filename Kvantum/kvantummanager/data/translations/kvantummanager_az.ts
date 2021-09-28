@@ -6,7 +6,7 @@
     <message>
         <location filename="../../about.ui" line="157"/>
         <source>License</source>
-        <translation type="unfinished"></translation>
+        <translation type="Lisenziya"></translation>
     </message>
 </context>
 <context>
@@ -14,49 +14,51 @@
     <message>
         <location filename="../../kvantummanager.ui" line="12"/>
         <source>Kvantum Manager</source>
-        <translation type="unfinished"></translation>
+        <translation type="Kvantum Meneceri"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="38"/>
         <source>Install/Update Theme</source>
-        <translation type="unfinished"></translation>
+        <translation type="Mövzunu quraşdırın/yeniləyin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="44"/>
         <source>&lt;center&gt;&lt;b&gt;&lt;i&gt;Kvantum&lt;/i&gt;&lt;/b&gt; comes with many themes but external themes can also be installed for being used by it. Here you could choose a theme folder and then press the button below to install it in your Home.&lt;/center&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="&lt;center&gt;&lt;b&gt;&lt;i&gt;Kvantum&lt;/i&gt;&lt;/b&gt; daxilində bir çox mövzular var, lakin kənar mövzular da quraşdırılaraq istifadə oluna bilər. Buradan bir mövzu qovluğu seçə və aşağıdakı düyməyə vuraraq onu Ana səhifədə quraşdıra bilərsiniz.&lt;/center&gt;"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="76"/>
         <source>Select a Kvantum
 theme folder</source>
-        <translation type="unfinished"></translation>
+        <translation type="Bir Kvantum
+mövzusu qovluğu seçin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="113"/>
         <source>Add this theme to the list of themes that
 Kvantum can use in addition to its own themes.</source>
-        <translation type="unfinished"></translation>
+        <translation type="Bu mövzunu mövzular siyahısına daxil edin ki,
+Kvantum onu öz mövzularına əlavə etsin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="117"/>
         <source>Install this theme</source>
-        <translation type="unfinished"></translation>
+        <translation type="Bu mövzunu quraşdırın"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="138"/>
         <source>Change/Delete Theme</source>
-        <translation type="unfinished"></translation>
+        <translation type="Mövzunu Dəyişin/Silin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="144"/>
         <source>Select a theme:</source>
-        <translation type="unfinished"></translation>
+        <translation type="Bir mövzu seçin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="191"/>
         <source>Delete this theme</source>
-        <translation type="unfinished"></translation>
+        <translation type="Bu mövzunu silin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="198"/>
@@ -64,82 +66,89 @@ Kvantum can use in addition to its own themes.</source>
 
 A disabled button means that
 the theme is already used.</source>
-        <translation type="unfinished"></translation>
+        <translation type="Kvantumu bu mövzunu istifadə etməyə məcbur edin!
+
+Söndürmək düyməsi onu göstərir ki,
+mövzu artıq istifadə olunub."></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="204"/>
         <source>Use this theme</source>
-        <translation type="unfinished"></translation>
+        <translation type="Bu mövzunu istifadə edin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="257"/>
         <source>Configure Active Theme</source>
-        <translation type="unfinished"></translation>
+        <translation type="Aktiv mövzunu tənzimləyin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="321"/>
         <source>Revert to the default (root)
 settings of this theme.
 (Ctrl+Z)</source>
-        <translation type="unfinished"></translation>
+        <translation type="Bu mövzunun ilkin (kök)
+ayarlarını qaytarın.
+(Ctrl+Z)"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="326"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Revert to the default (root) settings of this theme!&lt;/p&gt;&lt;p&gt;When clicked and confirmed, all changes to the configuration will be lost but the probable customized SVG file will remain intact.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bu mövzunun ilkin (kök) ayarlarını qaytarın!&lt;/p&gt;&lt;p&gt;Vurduqda və təsdiq etdikdə tənzimləmək üçün bütün dəyişikliklər itiriləcəkdir, lakin ola bilsin ki, ayarlanmış SVG faylı toxunmaz qalacaqdır.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="329"/>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation type="Bərpa edin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="332"/>
         <source>Ctrl+Z</source>
-        <translation type="unfinished"></translation>
+        <translation type="Ctrl+Z"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="339"/>
         <source>Save this configuration
 (Ctrl+S)</source>
-        <translation type="unfinished"></translation>
+        <translation type="Bu tənzimləməni saxlayın
+(Ctrl+S)"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="343"/>
         <location filename="../../kvantummanager.ui" line="2114"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation type="Saxlayın"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="346"/>
         <source>Ctrl+S</source>
-        <translation type="unfinished"></translation>
+        <translation type="Ctrl+S"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="353"/>
         <source>Safe Settings</source>
-        <translation type="unfinished"></translation>
+        <translation type="Təhlükəsiz ayarlar"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="366"/>
         <source>Uncheck all these boxes if you want all
 widgets to appear as they are by default.</source>
-        <translation type="unfinished"></translation>
+        <translation type="Əgər bütün vidjetlərin ilkin vəziyyətdə olduğu kimi
+görünməyini istəyirsinizsə bütün xanalardakı seçimləri ləğv edin."></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="370"/>
         <source>Hacks</source>
-        <translation type="unfinished"></translation>
+        <translation type="Faydalı funksiyalar"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="394"/>
         <source>Transparent Dolphin view</source>
-        <translation type="unfinished"></translation>
+        <translation type="Dolphində şəfaf görünüş"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="716"/>
         <source>Normal font for default push buttons</source>
-        <translation type="unfinished"></translation>
+        <translation type="Standart düymələr üçün normal şrift"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="445"/>
@@ -148,17 +157,21 @@ widgets to appear as they are by default.</source>
 Under LXQt, it needs logging out and in or closing
 PCManFM-qt and then, stopping and starting Desktop
 with LXQt Session Settings.</source>
-        <translation type="unfinished"></translation>
+        <translation type="PCManFM-qt yan panelini kənarları ilə birləşdirin.
+
+LXQt mühitində, PCManFM-qt&apos;ni yenidən
+başlatmalı və ya sistemdən çıxaraq ona yenidən
+LXQT sessiyası ayarları ilə daxil olmaq lazımdır"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="452"/>
         <source>Transparent sidepane for PCManFM-qt</source>
-        <translation type="unfinished"></translation>
+        <translation type="PCManFM-qt üçün şəffaf yan panel"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="438"/>
         <source>Iconless push buttons</source>
-        <translation type="unfinished"></translation>
+        <translation type="Nişansız düymələr"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="474"/>
@@ -167,79 +180,85 @@ with LXQt Session Settings.</source>
 Under LXQt, it needs logging out and in or closing
 PCManFM-qt and then, stopping and starting Desktop
 with LXQt Session Settings.</source>
-        <translation type="unfinished"></translation>
+        <translation type="PCManFM-qt&apos;nin görünüşünü kənarı ilə birləşdirin.
+
+LXQt mühitində, PCManFM-qt&apos;ni yenidən
+başlatmalı və ya sistemdən çıxaraq ona yenidən
+LXQT sessiyası ayarları ilə daxil olmaq lazımdır."></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="481"/>
         <source>Transparent view for PCManFM-qt</source>
-        <translation type="unfinished"></translation>
+        <translation type="PCManFM-qt üçün şəffaf görünüş"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="467"/>
         <source>Iconless menus</source>
-        <translation type="unfinished"></translation>
+        <translation type="Düyməsiz menyular"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="510"/>
         <source>Blur explicitly translucent windows</source>
-        <translation type="unfinished"></translation>
+        <translation type="Yarımşəffaf pəncərələri tutqunlaşdırmaq"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="495"/>
         <source>Single top toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation type="Yalnız yuxarı alətlər paneli"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="529"/>
         <source>Do not draw any background for KTitles.</source>
-        <translation type="unfinished"></translation>
+        <translation type="KTitles üçün arxa plan göstərilməsin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="532"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not draw any background for KTitles?&lt;/p&gt;&lt;p&gt;Ktitles are used by some KDE applications to show different sections in configuration dialogs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;KTitles üçün heç bir arxa fon göstərilməsin?&lt;/p&gt;&lt;p&gt;Ktitles tənzimləmə dialoqlarında müxtəlif bölmələri göstərmək üçün bəzi KDE tətbiqlərindən istifadə edir.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="535"/>
         <source>Transparent KTitle label</source>
-        <translation type="unfinished"></translation>
+        <translation type="Şəffaf KTitle yarlığı"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="542"/>
         <source>Do not tint selected label icons with
 the highlight color!</source>
-        <translation type="unfinished"></translation>
+        <translation type="Seçilmiş yarlıq nişanları
+vurğulama rəngi ilə rənglənməsin!"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="546"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;By default, selected label icons are tinted by the highlight color.&lt;/p&gt;&lt;p&gt;Checking this box removes the tint.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;İlkin olaraq yarlıq nişanları vurğulama rəngi ilə rənglənir.&lt;/p&gt;&lt;p&gt;Bu xananın işarələnməsi rənglənməni ləğv edir.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="549"/>
         <source>No selection tint</source>
-        <translation type="unfinished"></translation>
+        <translation type="Seçim tonu olmadan"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="556"/>
         <source>Do not draw any background for (KDE) menu titles.
 (Needs Logging out and in for Plasma menus.)</source>
-        <translation type="unfinished"></translation>
+        <translation type="(KDE) menyusu başlıqları üçün fon göstərilməsin.
+(Plasma menyular üçün sesiyadan çıxmaq və yenidən daxil olmaq lazımdır.)"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="560"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not draw any background for (KDE) menu titles?&lt;/p&gt;&lt;p&gt;Menu titles are like menu separators but with icon and text.&lt;/p&gt;&lt;p&gt;This needs Logging out and in for KDE Plasma menus. For LXQt panel, a panel restart with &lt;span style=&quot; font-style:italic;&quot;&gt;Session Settings &lt;/span&gt;is enough.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;(KDE) menyu başlıqları üçün arxa fon göstərilməsin?&lt;/p&gt;&lt;p&gt;Menyu başlıqları menyu ayırıcısı kimidir, lakin nişan və mətndən ibarətdir.&lt;/p&gt;&lt;p&gt;Plasma menyuları üçün sesiyadan çıxaraq yenidən daxil olmaq lazımdır. LXQT panelləri üçün, paneli &lt;span style=&quot; font-style:italic;&quot;&gt;Sesiya ayarları &lt;/span&gt;ilə yenidən başlatmaq kifayətdir.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="563"/>
         <source>Transparent menu title</source>
-        <translation type="unfinished"></translation>
+        <translation type="Şəffaf menyu başlığı"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="637"/>
         <source>Tint label icons on mouseover by </source>
-        <translation type="unfinished"></translation>
+        <translation type="Kursor üzərində olduqda etiket nişanlarının rənglənməsi"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="651"/>
@@ -247,12 +266,12 @@ the highlight color!</source>
         <location filename="../../kvantummanager.ui" line="1021"/>
         <location filename="../../kvantummanager.ui" line="1054"/>
         <source> %</source>
-        <translation type="unfinished"></translation>
+        <translation type="%"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="586"/>
         <source>Respect dark themes</source>
-        <translation type="unfinished"></translation>
+        <translation type="Qaranlıq mövzuya üstünlük verilsin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="675"/>
@@ -260,39 +279,42 @@ the highlight color!</source>
         <source>Useful with monochrome icon sets and
 when the opacity of disabled icons is not
 reduced by other means.</source>
-        <translation type="unfinished"></translation>
+        <translation type="Monoxrom nişanlar dəstini istifadə etdikdə və
+söndürülmüş nişanların qeyri-şəffaflığını başqa
+yolla azaltmaq ümükün olmadıqda faydalıdır."></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="680"/>
         <location filename="../../kvantummanager.ui" line="695"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Useful with monochrome icon sets and when the opacity of disabled icons is not reduced by other means.&lt;/p&gt;&lt;p&gt;KDE automatically reduces the opacity of disabled icons. Therefore, this option might be useful rather under other desktop environments.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Monoxrom nişanlar dəstini istifadə etdikdə və söndürülmüş nişanların qeyri-şəffaflığını başqa yolla azaltmaq ümükün olmadıqda faydalıdır.&lt;/p&gt;&lt;p&gt;KDE söndürülmüş nişanların qeyri-şəffaflığını avtomatik azaldır. Bununla belə bu parametr digər İş Masasları mühitləri üçün də faydalı ola bilər.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="683"/>
         <source>Opacity of disabled icons:</source>
-        <translation type="unfinished"></translation>
+        <translation type="Söndürülmüş nişanların qeyri-şəffaflığı"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="605"/>
         <source>Show size grips of dialogs and statusbars
 as far as possible.</source>
-        <translation type="unfinished"></translation>
+        <translation type="Vəziyyət çubuqlarının və dialoqların
+ölçü tutacaqlarını mümkün olduqda göstərmək."></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="609"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show size grips of dialogs and statusbars as far as possible?&lt;/p&gt;&lt;p&gt;By default, the application decides whether they should be shown, but this hack could be useful for resizing windows easily when there is no window border.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vəziyyət çubuqlarının və dialoqların ölçü tutacaqları mümkün olduqda götərilsin?&lt;/p&gt;&lt;p&gt;İlkin olaraq tətbiq bunun göstərilib-göstərilməyəcəyini özü təyin edir, lakin bu tutacaq pəncərələr çərçivəsiz olduqda onların ölçüsünü asan dəyişmək üçün faydalıdır.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="612"/>
         <source>Force size grips</source>
-        <translation type="unfinished"></translation>
+        <translation type="Ölçü tutacaqları məcburi görünsün"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="731"/>
         <source>LXQt main menu icon size:</source>
-        <translation type="unfinished"></translation>
+        <translation type="LXQT əsas menyusunun ölçüsü:"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="746"/>
@@ -306,23 +328,24 @@ as far as possible.</source>
         <location filename="../../kvantummanager.ui" line="1408"/>
         <location filename="../../kvantummanager.ui" line="1443"/>
         <source> px</source>
-        <translation type="unfinished"></translation>
+        <translation type="piksel"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="760"/>
         <source>Compositing &amp;&amp; General Look</source>
-        <translation type="unfinished"></translation>
+        <translation type="Dəstələyici və Ümumi görünüş"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="916"/>
         <source>Has effect only when there is a translucent SVG background
 for windows or the window opacity is reduced (see below).</source>
-        <translation type="unfinished"></translation>
+        <translation type="Effekt, yalnız pəncərənin SVG arxa fonu yarımşəffaf olduqda
+və ya pəncərənin qeyri-şəffaflığı azaldıqda görünür (aşağıya baxın)."></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="934"/>
         <source>Opaque apps:</source>
-        <translation type="unfinished"></translation>
+        <translation type="Qeyri-şəffaf tətbiqlər:"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="766"/>
@@ -331,7 +354,11 @@ will not have translucency or shadow.
 
 If this is disabled, see:
 Miscellaneous → Respect current DE if possible</source>
-        <translation type="unfinished"></translation>
+        <translation type="İşarələndikdə, menyular, ipucları və pəncərələr
+yarımşəffaf və ya kölgəli olmayacaqlar.
+
+Əgər bu söndürülərsə, baxın:
+Müxtəlif → Mümkün olduqda cari mühitə üstünlük verilsin"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="227"/>
