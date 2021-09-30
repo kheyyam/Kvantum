@@ -363,37 +363,43 @@ Müxtəlif → Mümkün olduqda cari mühitə üstünlük verilsin"></translatio
     <message>
         <location filename="../../kvantummanager.ui" line="227"/>
         <source>&lt;br&gt;&lt;br&gt;Since &lt;b&gt;&lt;i&gt;Kvantum&lt;/i&gt;&lt;/b&gt; is independent of all desktop environments, you first need to &lt;i&gt;activate&lt;/i&gt; it with a Qt platform integration program. KDE and LXQt provide simple tools for changing the active Qt style plugin. With other platforms, you need a Qt configuration tool.&lt;br/&gt;&lt;br/&gt;Under KDE, also select and apply the color scheme of this theme because some KDE applications may get their colors directly from the KDE color scheme.&lt;br/&gt;&lt;br/&gt;Running applications will get the new theme after being closed and reopened. Logging out and in would be good for all KDE/LXQt parts to see it completely.</source>
-        <translation type="unfinished"></translation>
+        <translation type="&lt;br&gt;&lt;br&gt;Since &lt;b&gt;&lt;i&gt;Kvantum&lt;/i&gt;&lt;/b&gt; bütün İş masaları mühitində müstəqildir, ilk öncə onu Qt platforma inteqrasiyası proqramı ilə &lt;i&gt;aktivləşdirmək&lt;/i&gt; lazımdır. KDE və LXQt, aktiv Qt stil qoşmasına dəyişiklik etmək üçün sadə vasitələr təqdim edir. Digər platformalarda Qt tənzimləmə alətinə ehtiyacınız olacaq.&lt;br/&gt;&lt;br/&gt;KDE-sə, bu mövzunun rəng sxemini də seçin və tətbiq edin, çünki bəzi KDE tətbiqləri rənglərini birbaşa KDE rəng sxemindən alırlar.&lt;br/&gt;&lt;br/&gt;İşlək tətbiqlər bağlandıqdan və yenidən açıldıqdan sonra bu mövzular qüvvəyə minəcəkdir. KDE/LXQT komponentlərində bunları daha yaxşı görmək üçün sistedən çıxmalı və ona yenidən daxil olmalısınız."></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="517"/>
         <source>By default, vertical toolbars are not styled.
 
 If this is disabled, see the above option.</source>
-        <translation type="unfinished"></translation>
+        <translation type="İlkin olaraq şaquli alətlər paneli tərtib edilmir.
+
+Əgər bu söndürülübsə aşağıdakı parametrə baxın"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="522"/>
         <source>Style vertical toolbars</source>
-        <translation type="unfinished"></translation>
+        <translation type="Şaquli alətlər panelinin tərtibatı"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="570"/>
         <source>If checked, the contents of a form will be
 horizontally centered as far as possible.</source>
-        <translation type="unfinished"></translation>
+        <translation type="İşarələnərsə, formanın məzmunu
+mümkün qədər üfüqi mərkəzləşdiriləcəkdir"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="574"/>
         <source>Centered form layouts</source>
-        <translation type="unfinished"></translation>
+        <translation type="Forma maketləri mərkəzləşdirildi"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="593"/>
         <source>You might see annoying artifacts that are caused
 by bugs in Qt&apos;s handling of non-integer scaling
 with window translucency or gradient.</source>
-        <translation type="unfinished"></translation>
+        <translation type="Siz, pəncərənin və ya qradient ilə Qt-nin
+tam ölçülü olmayan miqyaslanmasının işlənməsində 
+yaranmış xətalar səbəbindən bəzi arzuolunmaz
+artefaktlar görə bilərsiniz"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="598"/>
@@ -404,12 +410,13 @@ with window translucency or gradient.</source>
         <location filename="../../kvantummanager.ui" line="619"/>
         <source>By default, the scroll slider jumps to a position
 when the scrollbar is left clicked.</source>
-        <translation type="unfinished"></translation>
+        <translation type="İlkin olaraq sürüşdümə panelinə siçanın sol
+düyməsi ilə vurduqda sürüşdürmə çubuğu bu yerə atlayır"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="623"/>
         <source>Scroll jump with middle click</source>
-        <translation type="unfinished"></translation>
+        <translation type="Sürüşmənin orta kliklə atlanması"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="661"/>
@@ -418,12 +425,16 @@ with the left mouse button.
 
 Warning: Qt&apos;s kinetic scrolling has bugs and may
 seriously interfere with other jobs.</source>
-        <translation type="unfinished"></translation>
+        <translation type="Bəzi sürüşdürmə paneli vidjetləri onların
+üzərinə siçanın sol düyməsi ilə vurduqda sürüşür.
+
+Xəbərdarlıq: Qt kinetik sürüşməsində xətalar var və 
+başqa işlərə ciddi mane ola bilər."></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="668"/>
         <source>Kinetic scrolling</source>
-        <translation type="unfinished"></translation>
+        <translation type="Kinetik sürüşmə"></translation>
     </message>
     <message>
         <location filename="../../kvantummanager.ui" line="723"/>
