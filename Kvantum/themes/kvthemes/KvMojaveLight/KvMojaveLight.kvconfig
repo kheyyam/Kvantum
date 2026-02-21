@@ -11,6 +11,7 @@ group_toolbar_buttons=true
 spread_progressbar=true
 composite=true
 menu_shadow_depth=7
+menu_blur_radius=2
 spread_menuitems=true
 tooltip_shadow_depth=6
 scroll_width=12
@@ -46,14 +47,11 @@ groupbox_top_label=false
 inline_spin_indicators=true
 joined_inactive_tabs=true
 remove_extra_frames=true
-layout_spacing=2
+layout_spacing=3
 submenu_overlap=0
 tooltip_delay=-1
-button_contents_shift=false
 animate_states=true
-dark_titlebar=true
 hide_combo_checkboxes=false
-layout_margin=4
 no_window_pattern=false
 reduce_window_opacity=0
 respect_DE=true
@@ -67,7 +65,7 @@ reduce_menu_opacity=0
 
 [GeneralColors]
 window.color=#ebebeb
-inactive.window.color=#ebebeb
+inactive.window.color=#e6e6e6
 base.color=#ffffffcc
 inactive.base.color=#fafafacc
 alt.base.color=#f3f3f3
@@ -292,7 +290,7 @@ interior.element=tframe
 inherits=PanelButtonCommand
 frame=false
 interior=false
-indicator.size=11
+indicator.size=12
 indicator.element=sarrow
 
 [HeaderSection]

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2019 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2025 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -26,11 +26,7 @@
 #include <QTextOption>
 
 #include "shortcuthandler.h"
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
 #include "drag/windowmanager.h"
-#else
-#include "drag/windowmanager-old.h"
-#endif
 #include "themeconfig/ThemeConfig.h"
 #include "blur/blurhelper.h"
 #include "animation/animation.h"
@@ -39,7 +35,9 @@
 #define SLIDER_TICK_SIZE 5 // 10 at most
 #define ANIMATION_FRAME 40 // in ms
 
+QT_BEGIN_NAMESPACE
 class QSvgRenderer;
+QT_END_NAMESPACE
 
 namespace Kvantum {
 
@@ -280,7 +278,9 @@ class Style : public QCommonStyle {
     void drawComboLineEdit(const QStyleOption *option,
                            QPainter *painter,
                            const QWidget *lineedit,
-                           const QWidget *combo) const;
+                           const QWidget *combo,
+                           const QString &group,
+                           bool fillInterior) const;
 
     /* Gets a pixmap with a proper size from an icon considering HDPI. */
     QPixmap getPixmapFromIcon(const QIcon &icon,
@@ -347,7 +347,7 @@ class Style : public QCommonStyle {
     bool hasHighContrastWithContainer(const QWidget *w, const QColor color) const;
 
     /* Consider monochrome icons that reverse color when selected. */
-    KvIconMode getIconMode(int state, bool isInactive, label_spec lspec) const;
+    KvIconMode getIconMode(int state, bool isInactive, const label_spec &lspec) const;
 
     /* A solution for Qt5's problem with translucent windows.*/
     void setSurfaceFormat(QWidget *w) const;
@@ -356,18 +356,12 @@ class Style : public QCommonStyle {
       setSurfaceFormat(const_cast<QWidget*>(w));
     }
 
-    /* A workaround for Qt5's QMenu window type bug. */
-    void setMenuType(const QWidget *widget) const;
-
     /* A method for forcing (push and tool) button text colors. */
     void forceButtonTextColor(QWidget *widget, QColor col) const;
     void forceButtonTextColor(const QWidget *widget, QColor col) const
     {
       forceButtonTextColor(const_cast<QWidget*>(widget), col);
     }
-
-    /* Opacifies a translucent color if opaciry is forced. */
-    void opacifyColor(QColor& col) const;
 
     /* Gets color from #rrggbbaa. */
     QColor getFromRGBA(const QString &str) const;
@@ -439,12 +433,16 @@ class Style : public QCommonStyle {
     }
 
   private slots:
-    /* Called on timer timeout to advance busy progress bars. */
-    void advanceProgressbar();
+    void forgetPopupOrigin(QObject *o);
+
+    void forgetMovedMenu(QObject *o);
+
     void setAnimationOpacity();
     void setAnimationOpacityOut();
+
     /* Removes a widget from the list of translucent ones. */
     void noTranslucency(QObject *o);
+
     /* Removes a button from all special lists. */
     void removeFromSet(QObject *o);
 
@@ -456,7 +454,7 @@ class Style : public QCommonStyle {
 
     QString xdg_config_home;
 
-    QTimer *progressTimer_, *opacityTimer_, *opacityTimerOut_;
+    QTimer *opacityTimer_, *opacityTimerOut_;
     mutable int animationOpacity_, animationOpacityOut_; // A value >= 100 stops state change animation.
     /* The start state for state change animation */
     mutable QString animationStartState_, animationStartStateOut_;
@@ -464,8 +462,9 @@ class Style : public QCommonStyle {
     QPointer<QWidget> animatedWidget_, animatedWidgetOut_;
     QHash<QWidget*, QPointer<QWidget>> popupOrigins_;
 
-    /* List of busy progress bars */
-    QMap<QWidget*,int> progressbars_;
+    /* List of menus that are moved because of their shadows. */
+    QSet<const QWidget*> movedMenus_;
+
     /* List of windows, tooltips and menus that are (made) translucent */
     QSet<const QWidget*> translucentWidgets_;
     mutable QSet<QWidget*> forcedTranslucency_;
@@ -495,6 +494,10 @@ class Style : public QCommonStyle {
     bool isDolphin_;
     bool isPcmanfm_;
 
+    bool isKrita_; // Because of bugs in Krita 5.1.0
+
+    bool isKvM_; // To handle translucency in Kvantum Manager on changing the theme
+
     /* The size of the slider handle with no tick mark (if it exists) */
     mutable int ticklessSliderHandleSize_;
 
@@ -511,11 +514,7 @@ class Style : public QCommonStyle {
     QList<int> realMenuShadow_;
     QList<qreal> tooltipShadow_;
 
-    /* Is this DE GTK-based? Currently Gnome, Unity and Pantheon are supported. */
-    bool gtkDesktop_;
-    /* Under Gnome and Unity, we disable compositing because otherwise, DE shadows
-       would be drawn around Kvantum's menu shadows. Other DEs have their own ways
-       of preventing that or the user could disable compositing with Kvantum Manager. */
+    /* This will be useful if we want to disable compositing under some DEs. */
     bool noComposite_;
     /* For correct updating on mouseover with active tab overlapping */
     QRect tabHoverRect_;

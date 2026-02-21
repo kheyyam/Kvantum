@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2018-2020 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2018-2025 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -32,16 +32,20 @@
 #include <QAbstractItemView>
 #include <QWindow>
 #include <QToolButton>
+#include <QShortcut>
 #include <QGraphicsDropShadowEffect>
+#include <QUrl>
+#include <QDesktopServices>
+#include <QRandomGenerator>
+#include <QLocale>
 
 namespace KvManager {
 
 static const QStringList windowGroups = (QStringList() << "Window" << "WindowTranslucent"
                                                        << "Dialog" << "DialogTranslucent");
 
-KvantumManager::KvantumManager (const QString& lang, QWidget *parent) : QMainWindow (parent), ui (new Ui::KvantumManager)
+KvantumManager::KvantumManager (QWidget *parent) : QMainWindow (parent), ui (new Ui::KvantumManager)
 {
-    lang_ = lang;
     ui->setupUi (this);
 
     confPageVisited_ = false;
@@ -49,10 +53,6 @@ KvantumManager::KvantumManager (const QString& lang, QWidget *parent) : QMainWin
     kvDefault_ = "Kvantum (" + tr ("default") + ")";
 
     centerDefaultDocTabs_ = centerDefaultNormalTabs_ = false; // not really needed
-
-#if (QT_VERSION < QT_VERSION_CHECK(5,13,1))
-    ui->checkBoxKineticScrolling->setEnabled (false);
-#endif
 
     ui->openTheme->setIcon (symbolicIcon::icon (":/Icons/data/document-open.svg"));
     ui->deleteTheme->setIcon (symbolicIcon::icon (":/Icons/data/edit-delete.svg"));
@@ -124,10 +124,6 @@ KvantumManager::KvantumManager (const QString& lang, QWidget *parent) : QMainWin
                                                     << tr ("Menubar and primary toolbar")
                                                     << tr ("Anywhere possible"));
 
-#if (QT_VERSION < QT_VERSION_CHECK(5,15,0))
-    ui->checkBoxBtnDrag->setVisible (false);
-#endif
-
     ui->appsEdit->setClearButtonEnabled (true);
 
     QLabel *statusLabel = new QLabel();
@@ -137,8 +133,8 @@ KvantumManager::KvantumManager (const QString& lang, QWidget *parent) : QMainWin
     /* set kvconfigTheme_ and connect to combobox signals */
     updateThemeList();
 
-    effect_ = new QGraphicsOpacityEffect();
-    animation_ = new QPropertyAnimation (effect_, "opacity");
+    effect_ = new QGraphicsOpacityEffect;
+    animation_ = new QPropertyAnimation;
 
     setAttribute (Qt::WA_AlwaysShowToolTips);
     /* set tooltip as "whatsthis" if the latter doesn't exist */
@@ -153,7 +149,7 @@ KvantumManager::KvantumManager (const QString& lang, QWidget *parent) : QMainWin
         /* sadly, Qt 5.12 sees most tooltip texts as rich texts */
         w->setToolTip ("<p style='white-space:pre'>" + tip + "</p>");
     }
-    showAnimated (ui->installLabel, 1500);
+    showAnimated (ui->installLabel, 0, 1500);
 
     connect (ui->quit, &QAbstractButton::clicked, this, &KvantumManager::close);
     connect (ui->openTheme, &QAbstractButton::clicked, this, &KvantumManager::openTheme);
@@ -170,17 +166,16 @@ KvantumManager::KvantumManager (const QString& lang, QWidget *parent) : QMainWin
     connect (ui->lineEdit, &QLineEdit::textChanged, this, &KvantumManager::txtChanged);
     connect (ui->appsEdit, &QLineEdit::textChanged, this, &KvantumManager::txtChanged);
     connect (ui->toolBox, &QToolBox::currentChanged, this, &KvantumManager::tabChanged);
+    connect (ui->tabWidget, &QTabWidget::currentChanged, this, &KvantumManager::setTabWidgetFocus);
     connect (ui->saveAppButton, &QAbstractButton::clicked, this, &KvantumManager::writeAppLists);
     connect (ui->removeAppButton, &QAbstractButton::clicked, this, &KvantumManager::removeAppList);
     connect (ui->preview, &QAbstractButton::clicked, this, &KvantumManager::preview);
     connect (ui->aboutButton, &QAbstractButton::clicked, this, &KvantumManager::aboutDialog);
     connect (ui->whatsthisButton, &QAbstractButton::clicked, this, &KvantumManager::showWhatsThis);
     connect (ui->checkBoxComboMenu, &QAbstractButton::clicked, this, &KvantumManager::comboMenu);
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
     connect (ui->comboX11Drag, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index) {
         ui->checkBoxBtnDrag->setEnabled (index > 1);
     });
-#endif
 
     /* vertical toolbars could be styled only if all toolbars can */
     connect (ui->checkBoxToolbar, &QAbstractButton::clicked, [this] (bool checked) {
@@ -189,7 +184,7 @@ KvantumManager::KvantumManager (const QString& lang, QWidget *parent) : QMainWin
         ui->checkBoxVToolbar->setEnabled (!checked);
     });
 
-    /* in this special case, show a message box */
+    /* in these cases, show a message box */
     connect (ui->checkBoxNoninteger, &QAbstractButton::clicked, [this] (bool checked) {
         if (checked) return;
         QMessageBox msgBox (QMessageBox::Warning,
@@ -199,9 +194,58 @@ KvantumManager::KvantumManager (const QString& lang, QWidget *parent) : QMainWin
                             this);
         msgBox.exec();
     });
+    ui->checkBoxKineticScrolling->setIcon (symbolicIcon::icon (":/Icons/data/dialog-warning.svg"));
+    connect (ui->checkBoxKineticScrolling, &QAbstractButton::clicked, [this] (bool checked) {
+        if (!checked) return;
+        QString txt = ui->checkBoxKineticScrolling->toolTip().split ("\n\n", Qt::SkipEmptyParts).last();
+        QMessageBox msgBox (QMessageBox::Warning,
+                            tr ("Kvantum"),
+                            "<center>" + txt + "</center>\n",
+                            QMessageBox::Close,
+                            this);
+        msgBox.exec();
+    });
+
+    /* we want to open the config file but QLabel's link implementation has problems */
+    ui->configLabel->setOpenExternalLinks (false);
+    connect (ui->configLabel, &QLabel::linkActivated, this, &KvantumManager::openUserConfigFile);
+
+    /* some useful shortcuts */
+    QShortcut *shortcut = new QShortcut (QKeySequence (Qt::CTRL | Qt::Key_Down), this);
+    connect (shortcut, &QShortcut::activated, ui->toolBox, [this] {
+        if (QApplication::activePopupWidget()) return; // workaround for the popup completer
+        int indx = ui->toolBox->currentIndex() + 1;
+        if (indx >= ui->toolBox->count()) indx = 0;
+        ui->toolBox->setCurrentIndex (indx);
+    });
+    shortcut = new QShortcut (QKeySequence (Qt::CTRL | Qt::Key_Up), this);
+    connect (shortcut, &QShortcut::activated, ui->toolBox, [this] {
+        if (QApplication::activePopupWidget()) return;
+        int indx = ui->toolBox->currentIndex() - 1;
+        if (indx < 0) indx = ui->toolBox->count() - 1;
+        ui->toolBox->setCurrentIndex (indx);
+    });
+    shortcut = new QShortcut (QKeySequence (Qt::CTRL | Qt::Key_Tab), this);
+    connect (shortcut, &QShortcut::activated, ui->tabWidget, [this] {
+        if (!ui->tabWidget->isVisible()) return;
+        int indx = ui->tabWidget->currentIndex() + 1;
+        if (indx >= ui->tabWidget->count()) indx = 0;
+        ui->tabWidget->setCurrentIndex (indx);
+    });
+    shortcut = new QShortcut (QKeySequence (Qt::CTRL | Qt::Key_Backtab), this);
+    connect (shortcut, &QShortcut::activated, ui->tabWidget, [this] {
+        if (!ui->tabWidget->isVisible()) return;
+        int indx = ui->tabWidget->currentIndex() - 1;
+        if (indx < 0) indx = ui->tabWidget->count() - 1;
+        ui->tabWidget->setCurrentIndex (indx);
+    });
 
     if (auto viewport = ui->toolBox->widget (2)->parentWidget())
+    {
         viewport->installEventFilter (this); // see eventFilter()
+        if (auto scrollArea = qobject_cast<QAbstractScrollArea*>(viewport->parentWidget()))
+            scrollArea->setFocusPolicy (Qt::NoFocus); // keep the focus inside
+    }
 
     /* get ready for translucency */
     setAttribute (Qt::WA_NativeWindow, true);
@@ -212,73 +256,19 @@ KvantumManager::KvantumManager (const QString& lang, QWidget *parent) : QMainWin
         window->setFormat (format);
     }
 
-    QIcon icn = QIcon::fromTheme ("kvantum");
-    if (icn.isNull())
-        icn = QIcon (":/Icons/kvantumpreview/data/kvantum.svg");
+    QIcon icn = QIcon::fromTheme ("kvantum", QIcon (":/Icons/kvantumpreview/data/kvantum.svg"));
     setWindowIcon (icn);
     ui->preview->setIcon (icn);
 
-    /* The conf page is the largest and we want to avoid scrollbars in it
-       the first time it is shown. So, we force a layout calculation for it,
-       knowing that it is the current page in the ui file. */
-    setAttribute (Qt::WA_DontShowOnScreen);
+    resize (minimumSizeHint().expandedTo (QSize (600, 400)));
     show();
 }
 /*************************/
 KvantumManager::~KvantumManager()
 {
-    delete ui;
+    animatedWidgets_.clear();
     delete animation_;
-    delete effect_;
-}
-/*************************/
-void KvantumManager::showWindow()
-{ // set the first page as the current page and really show the window
-    ui->toolBox->setCurrentIndex (0);
-    resize (minimumSizeHint().expandedTo (QSize (600, 400)));
-    hide();
-    setAttribute (Qt::WA_DontShowOnScreen, false);
-    QTimer::singleShot (0, this, [this] {
-        show();
-        raise();
-        activateWindow();
-    });
-}
-/*************************/
-void KvantumManager::fitThirdPageToContents()
-{
-     /* Avoid scrollbars in the conf page.
-        NOTE: The layout of the conf page should be completely
-              calculated when this function is called. */
-    if (auto viewport = ui->toolBox->widget (2)->parentWidget())
-    {
-        if (auto scrollArea = qobject_cast<QAbstractScrollArea*>(viewport->parentWidget()))
-        {
-            QSize diff = viewport->childrenRect().size() - scrollArea->size();
-            if (diff.width() > 0 || diff.height() > 0)
-            {
-                QSize newSize = size().expandedTo (size() + diff);
-                QRect sr;
-                if (QWindow *win = windowHandle())
-                {
-                    if (QScreen *sc = win->screen())
-                        sr = sc->availableGeometry();
-                }
-                if (sr.isNull())
-                {
-                    if (QScreen *pScreen = QApplication::primaryScreen())
-                        sr = pScreen->availableGeometry();
-                }
-                if (!sr.isNull())
-                {
-                    newSize = newSize.boundedTo (sr.size()
-                                                 // the window frame size
-                                                 - (frameGeometry().size() - size()));
-                }
-                resize (newSize);
-            }
-        }
-    }
+    delete ui;
 }
 /*************************/
 void KvantumManager::closeEvent (QCloseEvent *event)
@@ -310,6 +300,25 @@ QString KvantumManager::tooTipToWhatsThis (const QString &tip)
     for (int i = 0; i < paragraphs.size(); ++i)
         simplified.append (paragraphs.at (i).simplified());
     return simplified.join ("\n\n");
+}
+/*************************/
+// Gives the focus to the first enabled widget of the active tab.
+void KvantumManager::setTabWidgetFocus()
+{
+    if (auto tab = ui->tabWidget->currentWidget())
+    {
+        if (tab->isAncestorOf (QApplication::focusWidget())) return;
+        auto w = tab->findChild<QWidget*>();
+        QList<QWidget*> disabled;
+        while (w && !w->isEnabled())
+        {
+            if (disabled.contains (w)) return;
+            disabled << w;
+            w = w->nextInFocusChain();
+            if (!tab->isAncestorOf (w)) return;
+        }
+        if (w) w->setFocus();
+    }
 }
 /*************************/
 void KvantumManager::openTheme()
@@ -912,15 +921,62 @@ void KvantumManager::deleteTheme()
     writeOrigAppLists();
 }
 /*************************/
-void KvantumManager::showAnimated (QWidget *w, int duration)
+void KvantumManager::showAnimated (QWidget *w, int type, int duration)
 {
+    if (animation_->state() != QAbstractAnimation::Stopped)
+    { // end the previous animation
+        if (animation_->targetObject())
+        {
+            animation_->targetObject()->setProperty (animation_->propertyName().constData(),
+                                                     animation_->endValue());
+        }
+        animation_->stop();
+    }
     w->show();
-    w->setGraphicsEffect (effect_);
-    animation_->stop();
-    animation_->setDuration (duration);
-    animation_->setStartValue (0.0);
-    animation_->setEndValue (1.0);
+    if (type < 0)
+    { // decide on the animation type
+        static int lastType = QRandomGenerator::global()->bounded(1, 3);
+        if (animatedWidgets_.contains (w->objectName()))
+            type = 0; // only one position animation for each widget
+        else
+        {
+            animatedWidgets_.insert (w->objectName());
+            type = lastType == 1 ? 2 : 1;
+            lastType = type;
+        }
+    }
+
+    /* First silence Qt's debug messages "QPropertyAnimation: you're trying to animate
+       a non-existing property X of your QObject". */
+    animation_->setPropertyName (QByteArray());
+
+    if (type == 0)
+    { // opacity animation
+        w->setGraphicsEffect (effect_);
+        animation_->setTargetObject (effect_);
+        animation_->setDuration (duration > 0 ? duration : 1000);
+        animation_->setPropertyName ("opacity");
+        animation_->setEasingCurve (QEasingCurve::OutQuad);
+        animation_->setStartValue (0.0);
+        animation_->setEndValue (1.0);
+    }
+    else
+    { // position animation
+        animation_->setTargetObject (w);
+        animation_->setDuration (duration > 0 ? duration : 700);
+        animation_->setPropertyName ("pos");
+        animation_->setEasingCurve (QEasingCurve::OutExpo);
+        animation_->setStartValue (QPoint (w->x() + (type == 1 ? 1 : -1) * w->rect().width() / 2,
+                                   w->y()));
+        animation_->setEndValue (w->pos());
+    }
     animation_->start();
+
+    /* Qt has a scroll bug that shows up with SH_UnderlineShortcut set to
+       "false" and interferes with label scrolling. This is a workaround. */
+    connect (animation_, &QAbstractAnimation::finished,
+             w, QOverload<>::of(&QWidget::update),
+             Qt::UniqueConnection);
 }
 /*************************/
 // Activates the theme and sets kvconfigTheme_.
@@ -951,12 +1007,11 @@ void KvantumManager::useTheme()
     QLabel *statusLabel = ui->statusBar->findChild<QLabel *>();
     statusLabel->setText ("<b>" + tr ("Active theme:") + QString ("</b> %1").arg (theme));
     ui->statusBar->showMessage (tr ("Theme changed to %1.").arg (theme), 10000);
-    showAnimated (ui->usageLabel, 1000);
+    showAnimated (ui->usageLabel);
 
     ui->useTheme->setEnabled (false);
 
-    /* this is needed if the config file is created by this method */
-    QCoreApplication::processEvents();
+    QCoreApplication::processEvents(); // needed if the config file is created by this method
     restyleWindow();
     if (process_->state() == QProcess::Running)
         preview();
@@ -999,6 +1054,7 @@ void KvantumManager::defaultThemeButtons()
     ui->checkBoxPcmanfmSide->setChecked (defaultSettings.value ("transparent_pcmanfm_sidepane").toBool());
     ui->checkBoxPcmanfmView->setChecked (defaultSettings.value ("transparent_pcmanfm_view").toBool());
     ui->checkBoxBlurTranslucent->setChecked (defaultSettings.value ("blur_translucent").toBool());
+    ui->checkBoxBlurActive->setChecked (defaultSettings.value ("blur_only_active_window").toBool());
     ui->checkBoxKtitle->setChecked (defaultSettings.value ("transparent_ktitle_label").toBool());
     ui->checkBoxMenuTitle->setChecked (defaultSettings.value ("transparent_menutitle").toBool());
     ui->checkBoxDark->setChecked (defaultSettings.value ("respect_darkness").toBool());
@@ -1064,10 +1120,6 @@ void KvantumManager::defaultThemeButtons()
         ui->checkBoxMenubar->setChecked (true);
     ui->checkBoxMenuToolbar->setChecked (defaultSettings.value ("merge_menubar_with_toolbar").toBool());
     ui->checkBoxGroupToolbar->setChecked (defaultSettings.value ("group_toolbar_buttons").toBool());
-    if (defaultSettings.contains ("button_contents_shift")) // it's true by default
-        ui->checkBoxButtonShift->setChecked (defaultSettings.value ("button_contents_shift").toBool());
-    else
-        ui->checkBoxButtonShift->setChecked (true);
     if (defaultSettings.contains ("alt_mnemonic")) // it's true by default
         ui->checkBoxAlt->setChecked (defaultSettings.value ("alt_mnemonic").toBool());
     else
@@ -1131,6 +1183,15 @@ void KvantumManager::defaultThemeButtons()
 
     ui->checkBoxShadowlessPopup->setChecked (defaultSettings.value ("shadowless_popup").toBool());
 
+    int radius = 0;
+    if (defaultSettings.contains ("menu_blur_radius")) // 0 by default
+        radius = qMin (qMax (defaultSettings.value ("menu_blur_radius").toInt(), 0), 10);
+    ui->spinMenuBlur->setValue (radius);
+    radius = 0;
+    if (defaultSettings.contains ("tooltip_blur_radius")) // 0 by default
+        radius = qMin (qMax (defaultSettings.value ("tooltip_blur_radius").toInt(), 0), 10);
+    ui->spinTooltipBlur->setValue (radius);
+
     /* all contrast effect values are 1 by default */
     if (defaultSettings.contains ("contrast"))
     {
@@ -1156,7 +1217,7 @@ void KvantumManager::defaultThemeButtons()
 
     tmp = 0;
     if (defaultSettings.contains ("reduce_window_opacity")) // it's 0 by default
-        tmp = qMin (qMax (defaultSettings.value ("reduce_window_opacity").toInt(), 0), 90);
+        tmp = qMin (qMax (defaultSettings.value ("reduce_window_opacity").toInt(), -90), 90);
     ui->spinReduceOpacity->setValue (tmp);
 
     tmp = 0;
@@ -1200,13 +1261,13 @@ void KvantumManager::defaultThemeButtons()
     else
         ui->spinToolbar->setValue (tmp);
 
-    tmp = 2;
+    tmp = 3;
     if (defaultSettings.contains ("layout_spacing"))
         tmp = defaultSettings.value ("layout_spacing").toInt();
     tmp = qMin (qMax (tmp,2), 16);
     ui->spinLayout->setValue (tmp);
 
-    tmp = 4;
+    tmp = 6;
     if (defaultSettings.contains ("layout_margin"))
         tmp = defaultSettings.value ("layout_margin").toInt();
     tmp = qMin (qMax (tmp,2), 16);
@@ -1233,6 +1294,42 @@ void KvantumManager::defaultThemeButtons()
     defaultSettings.endGroup();
 
     respectDE (ui->checkBoxDE->isChecked());
+}
+/*************************/
+void KvantumManager::fitConfPageToContents()
+{
+     /* Avoid scrollbars in the conf page.
+        NOTE: The layout of the conf page should be completely
+              calculated when this function is called. */
+    if (auto viewport = ui->toolBox->widget (2)->parentWidget())
+    {
+        if (auto scrollArea = qobject_cast<QAbstractScrollArea*>(viewport->parentWidget()))
+        {
+            QSize diff = viewport->childrenRect().size() - scrollArea->size();
+            if (diff.width() > 0 || diff.height() > 0)
+            {
+                QSize newSize = size().expandedTo (size() + diff);
+                QRect sr;
+                if (QWindow *win = windowHandle())
+                {
+                    if (QScreen *sc = win->screen())
+                        sr = sc->availableGeometry();
+                }
+                if (sr.isNull())
+                {
+                    if (QScreen *pScreen = QApplication::primaryScreen())
+                        sr = pScreen->availableGeometry();
+                }
+                if (!sr.isNull())
+                {
+                    newSize = newSize.boundedTo (sr.size()
+                                                 // the window frame size
+                                                 - (frameGeometry().size() - size()));
+                }
+                resize (newSize);
+            }
+        }
+    }
 }
 /*************************/
 void KvantumManager::restyleWindow()
@@ -1285,7 +1382,7 @@ void KvantumManager::restyleWindow()
         }
         /* avoid scrollbars in the conf page */
         if (ui->toolBox->currentIndex() == 2)
-            fitThirdPageToContents();
+            fitConfPageToContents();
     });
 }
 /*************************/
@@ -1293,11 +1390,15 @@ void KvantumManager::tabChanged (int index)
 {
     ui->statusBar->clearMessage();
     if (index == 0)
-        showAnimated (ui->installLabel, 1000);
-    if (index == 1 || index == 3)
+    {
+        showAnimated (ui->installLabel, 0);
+        ui->openTheme->setFocus();
+    }
+    else if (index == 1 || index == 3)
     {
         if (index == 1)
         {
+            ui->comboBox->setFocus();
             /* put the active theme in the theme combobox */
             QString activeTheme;
             if (kvconfigTheme_.isEmpty())
@@ -1309,7 +1410,7 @@ void KvantumManager::tabChanged (int index)
             else
                 activeTheme = kvconfigTheme_;
             if (ui->comboBox->currentText() == activeTheme)
-                showAnimated (ui->usageLabel, 1000);
+                showAnimated (ui->usageLabel);
             else
             { // WARNING: QComboBox::setCurrentText() doesn't set the current index.
                 int index = ui->comboBox->findText (activeTheme);
@@ -1318,18 +1419,22 @@ void KvantumManager::tabChanged (int index)
             }
         }
         else
-            showAnimated (ui->appLabel, 1000);
+        {
+            showAnimated (ui->appLabel);
+            ui->appCombo->setFocus();
+        }
     }
     else if (index == 2)
     {
         ui->opaqueEdit->clear();
         defaultThemeButtons();
+        setTabWidgetFocus();
 
         if (kvconfigTheme_.isEmpty())
         {
             ui->configLabel->setText (tr ("These are the settings that can be safely changed.<br>For the others, click <i>Save</i> and then edit this file:")
                                       + "<br><i>~/.config/Kvantum/Default#/<b>Default#.kvconfig</b></i>");
-            showAnimated (ui->configLabel, 1000);
+            showAnimated (ui->configLabel);
             ui->checkBoxPattern->setEnabled (false);
         }
         else
@@ -1337,19 +1442,20 @@ void KvantumManager::tabChanged (int index)
             /* a config other than the default Kvantum one */
             QString themeDir = userThemeDir (kvconfigTheme_);
             QString themeConfig = QString ("%1/%2.kvconfig").arg (themeDir).arg (kvconfigTheme_);
+            userConfigFile_ = themeConfig;
             QString userSvg = QString ("%1/%2.svg").arg (themeDir).arg (kvconfigTheme_);
 
             /* If themeConfig doesn't exist but userSvg does, themeConfig be created by copying
                the default config below and this message will be correct. If neither themeConfig
                nor userSvg exists, this message will be replaced by the one that follows it. */
             ui->configLabel->setText (tr ("These are the settings that can be safely changed.<br>For the others, edit this file:")
-                                      + QString ("<br><i>%1").arg (themeDir) + QString ("/<b>%1.kvconfig</b></i>").arg (kvconfigTheme_));
+                                      + QString ("<a href='%2'><br><i>%1").arg (themeDir).arg (userConfigFile_) + QString ("/<b>%1.kvconfig</b></i></a>").arg (kvconfigTheme_));
             if (!QFile::exists (themeConfig) && !QFile::exists (userSvg))
             { // no user theme but a root one
                 ui->configLabel->setText (tr ("These are the settings that can be safely changed.<br>For the others, click <i>Save</i> and then edit this file:")
                                           + QString ("<br><i>~/.config/Kvantum/%1#/<b>%1#.kvconfig</b></i>").arg (kvconfigTheme_));
             }
-            showAnimated (ui->configLabel, 1000);
+            showAnimated (ui->configLabel);
 
             if (kvconfigTheme_.endsWith ("#"))
                 ui->restoreButton->show();
@@ -1428,8 +1534,6 @@ void KvantumManager::tabChanged (int index)
                     ui->checkBoxMenuToolbar->setChecked (themeSettings.value ("merge_menubar_with_toolbar").toBool());
                 if (themeSettings.contains ("group_toolbar_buttons"))
                     ui->checkBoxGroupToolbar->setChecked (themeSettings.value ("group_toolbar_buttons").toBool());
-                if (themeSettings.contains ("button_contents_shift"))
-                    ui->checkBoxButtonShift->setChecked (themeSettings.value ("button_contents_shift").toBool());
                 if (themeSettings.contains ("alt_mnemonic"))
                     ui->checkBoxAlt->setChecked (themeSettings.value ("alt_mnemonic").toBool());
                 int delay = -1;
@@ -1496,6 +1600,11 @@ void KvantumManager::tabChanged (int index)
 
                 ui->checkBoxShadowlessPopup->setChecked (themeSettings.value ("shadowless_popup").toBool());
 
+                if (themeSettings.contains ("menu_blur_radius"))
+                    ui->spinMenuBlur->setValue (qMin (qMax (themeSettings.value ("menu_blur_radius").toInt(), 0), 10));
+                if (themeSettings.contains ("tooltip_blur_radius"))
+                    ui->spinTooltipBlur->setValue (qMin (qMax (themeSettings.value ("tooltip_blur_radius").toInt(), 0), 10));
+
                 if (themeSettings.contains ("contrast"))
                 {
                     ui->spinContrast->setValue (qBound (static_cast<qreal>(0),
@@ -1518,7 +1627,7 @@ void KvantumManager::tabChanged (int index)
                 if (themeSettings.contains ("reduce_window_opacity"))
                 {
                     int rwo = themeSettings.value ("reduce_window_opacity").toInt();
-                    rwo = qMin (qMax (rwo, 0), 90);
+                    rwo = qMin (qMax (rwo, -90), 90);
                     ui->spinReduceOpacity->setValue (rwo);
                 }
                 if (themeSettings.contains ("reduce_menu_opacity"))
@@ -1600,10 +1709,8 @@ void KvantumManager::tabChanged (int index)
                 ui->checkBoxDolphin->setChecked (themeSettings.value ("transparent_dolphin_view").toBool());
                 ui->checkBoxPcmanfmSide->setChecked (themeSettings.value ("transparent_pcmanfm_sidepane").toBool());
                 ui->checkBoxPcmanfmView->setChecked (themeSettings.value ("transparent_pcmanfm_view").toBool());
-                bool blurTrans ((themeSettings.contains ("blur_translucent")
-                                 && themeSettings.value ("blur_translucent").toBool())
-                                || themeSettings.value ("blur_konsole").toBool()); // backward compatibility
-                ui->checkBoxBlurTranslucent->setChecked (blurTrans);
+                ui->checkBoxBlurTranslucent->setChecked (themeSettings.value ("blur_translucent").toBool());
+                ui->checkBoxBlurActive->setChecked (themeSettings.value ("blur_only_active_window").toBool());
                 ui->checkBoxKtitle->setChecked (themeSettings.value ("transparent_ktitle_label").toBool());
                 ui->checkBoxMenuTitle->setChecked (themeSettings.value ("transparent_menutitle").toBool());
                 ui->checkBoxDark->setChecked (themeSettings.value ("respect_darkness").toBool());
@@ -1660,9 +1767,22 @@ void KvantumManager::tabChanged (int index)
         if (!confPageVisited_ )
         {
             confPageVisited_ = true;
-            fitThirdPageToContents();
+            /* a single-shot timer is needed for the layout to be fully calculated */
+            QTimer::singleShot (0, this, [this] {
+                fitConfPageToContents();
+            });
         }
     }
+}
+/*************************/
+void KvantumManager::openUserConfigFile (const QString& /*link*/)
+{
+    if (userConfigFile_.isEmpty()) return;
+    QUrl url (userConfigFile_);
+    /* QDesktopServices::openUrl() may resort to "xdg-open", which isn't
+       the best choice. "gio" is always reliable, so we check it first. */
+    if (!QProcess::startDetached ("gio", QStringList() << "open" << url.toString()))
+        QDesktopServices::openUrl (url);
 }
 /*************************/
 /* Gets the comment and sets the state of the "deleteTheme" button. */
@@ -1713,9 +1833,9 @@ QString KvantumManager::getComment (const QString &comboText, bool setState)
         QSettings themeSettings (themeConfig, QSettings::NativeFormat);
         themeSettings.beginGroup ("General");
         QString commentStr ("comment");
-        if (!lang_.isEmpty())
+        if (!QLocale::system().name().isEmpty())
         {
-            const QString lang = "[" + lang_ + "]";
+            const QString lang = "[" + QLocale::system().name() + "]";
             if (themeSettings.contains ("comment" + lang))
                 commentStr += lang;
         }
@@ -1755,7 +1875,7 @@ void KvantumManager::selectionChanged (int /*index*/)
     if (txt == theme)
     {
         ui->useTheme->setEnabled (false);
-        showAnimated (ui->usageLabel, 1000);
+        showAnimated (ui->usageLabel);
     }
     else
     {
@@ -1782,11 +1902,7 @@ void KvantumManager::assignAppTheme (const QString &previousTheme, const QString
     {
         editTxt = editTxt.simplified();
         editTxt.remove (" ");
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
         QStringList appList = editTxt.split (",", Qt::SkipEmptyParts);
-#else
-        QStringList appList = editTxt.split (",", QString::SkipEmptyParts);
-#endif
         appList.removeDuplicates();
         appThemes_.insert (appTheme, appList);
     }
@@ -2062,7 +2178,7 @@ void KvantumManager::updateThemeList (bool updateAppThemes)
                 if (appTheme.endsWith ("#"))
                 {
                     /* we remove # for simplicity and add it only at writeOrigAppLists() */
-                    appTheme.remove (appTheme.count() - 1, 1);
+                    appTheme.remove (appTheme.size() - 1, 1);
                     if (ui->comboBox->findText ((appTheme == "Default" ? "Kvantum" : appTheme) + modifiedSuffix_) == -1)
                     {
                         nonexistent = true;
@@ -2246,6 +2362,7 @@ void KvantumManager::writeConfig()
         themeConfig = QString ("%1/Kvantum/%2/%2.kvconfig").arg (xdg_config_home).arg (kvconfigTheme_);
     if (QFile::exists (themeConfig)) // user theme (originally or after copying)
     {
+        userConfigFile_ = themeConfig;
         QSettings themeSettings (themeConfig, QSettings::NativeFormat);
         if (!themeSettings.isWritable())
         {
@@ -2263,6 +2380,7 @@ void KvantumManager::writeConfig()
         hackKeys.insert ("transparent_pcmanfm_sidepane", boolToStr (ui->checkBoxPcmanfmSide->isChecked()));
         hackKeys.insert ("transparent_pcmanfm_view", boolToStr (ui->checkBoxPcmanfmView->isChecked()));
         hackKeys.insert ("blur_translucent", boolToStr (ui->checkBoxBlurTranslucent->isChecked()));
+        hackKeys.insert ("blur_only_active_window", boolToStr (ui->checkBoxBlurActive->isChecked()));
         hackKeys.insert ("transparent_ktitle_label", boolToStr (ui->checkBoxKtitle->isChecked()));
         hackKeys.insert ("transparent_menutitle", boolToStr (ui->checkBoxMenuTitle->isChecked()));
         hackKeys.insert ("respect_darkness", boolToStr (ui->checkBoxDark->isChecked()));
@@ -2298,7 +2416,6 @@ void KvantumManager::writeConfig()
         generalKeys.insert ("menubar_mouse_tracking",  boolToStr (ui->checkBoxMenubar->isChecked()));
         generalKeys.insert ("merge_menubar_with_toolbar", boolToStr (ui->checkBoxMenuToolbar->isChecked()));
         generalKeys.insert ("group_toolbar_buttons", boolToStr (ui->checkBoxGroupToolbar->isChecked()));
-        generalKeys.insert ("button_contents_shift", boolToStr (ui->checkBoxButtonShift->isChecked()));
         generalKeys.insert ("alt_mnemonic", boolToStr (ui->checkBoxAlt->isChecked()));
         generalKeys.insert ("tooltip_delay", str.setNum (ui->spinTooltipDelay->value()));
         generalKeys.insert ("submenu_delay", str.setNum (ui->spinSubmenuDelay->value()));
@@ -2319,6 +2436,9 @@ void KvantumManager::writeConfig()
         generalKeys.insert ("popup_blurring", boolToStr (ui->checkBoxBlurPopup->isChecked()));
         generalKeys.insert ("shadowless_popup", boolToStr (ui->checkBoxShadowlessPopup->isChecked()));
         generalKeys.insert ("blurring", boolToStr (ui->checkBoxBlurWindow->isChecked()));
+
+        generalKeys.insert ("menu_blur_radius", str.setNum (ui->spinMenuBlur->value()));
+        generalKeys.insert ("tooltip_blur_radius", str.setNum (ui->spinTooltipBlur->value()));
 
         generalKeys.insert ("contrast", str.setNum (ui->spinContrast->value(), 'f', 2));
         generalKeys.insert ("intensity", str.setNum (ui->spinIntensity->value(), 'f', 2));
@@ -2370,7 +2490,8 @@ void KvantumManager::writeConfig()
             || themeSettings.value ("kinetic_scrolling").toBool() != ui->checkBoxKineticScrolling->isChecked()
             || qMin (qMax (themeSettings.value ("tint_on_mouseover").toInt(), 0), 100) != ui->spinTint->value()
             || qMin (qMax (themeSettings.value ("disabled_icon_opacity").toInt(), 0), 100) != ui->spinOpacity->value()
-            || themeSettings.value ("noninteger_translucency").toBool() == ui->checkBoxNoninteger->isChecked())
+            || themeSettings.value ("noninteger_translucency").toBool() == ui->checkBoxNoninteger->isChecked()
+            || themeSettings.value ("blur_only_active_window").toBool() != ui->checkBoxBlurActive->isChecked())
         {
             restyle = true;
         }
@@ -2389,11 +2510,14 @@ void KvantumManager::writeConfig()
         themeSettings.beginGroup ("General");
         if (themeSettings.value ("composite").toBool() == ui->checkBoxNoComposite->isChecked()
             || themeSettings.value ("translucent_windows").toBool() != ui->checkBoxTrans->isChecked()
-            || qMin (qMax (themeSettings.value ("reduce_window_opacity").toInt(), 0), 90) != ui->spinReduceOpacity->value()
+            || qMin (qMax (themeSettings.value ("reduce_window_opacity").toInt(), -90), 90) != ui->spinReduceOpacity->value()
             || qMin (qMax (themeSettings.value ("reduce_menu_opacity").toInt(), 0), 90) != ui->spinReduceMenuOpacity->value()
             || themeSettings.value ("blurring").toBool() != ui->checkBoxBlurWindow->isChecked()
             || themeSettings.value ("popup_blurring").toBool() != ui->checkBoxBlurPopup->isChecked()
             || themeSettings.value ("shadowless_popup").toBool() != ui->checkBoxShadowlessPopup->isChecked()
+
+            || qMin (qMax (themeSettings.value ("menu_blur_radius").toInt(), 0), 10) != ui->spinMenuBlur->value()
+            || qMin (qMax (themeSettings.value ("tooltip_blur_radius").toInt(), 0), 10) != ui->spinTooltipBlur->value()
 
             || qBound (static_cast<qreal>(0), themeSettings.value ("contrast").toReal(), static_cast<qreal>(2))
                != static_cast<qreal>(ui->spinContrast->value())
@@ -2418,7 +2542,6 @@ void KvantumManager::writeConfig()
             || themeSettings.value ("transient_scrollbar").toBool() != ui->checkBoxTransient->isChecked()
             || themeSettings.value ("transient_groove").toBool() != ui->checkBoxTransientGroove->isChecked()
             || themeSettings.value ("groupbox_top_label").toBool() != ui->checkBoxGroupLabel->isChecked()
-            || themeSettings.value ("button_contents_shift").toBool() != ui->checkBoxButtonShift->isChecked()
             || qMin (qMax (themeSettings.value ("button_icon_size").toInt(), 16), 64) != ui->spinButton->value()
             || qMin (qMax (themeSettings.value ("layout_spacing").toInt(), 2), 16) != ui->spinLayout->value()
             || qMin (qMax (themeSettings.value ("layout_margin").toInt(), 2), 16) != ui->spinLayoutMargin->value()
@@ -2602,8 +2725,8 @@ void KvantumManager::writeConfig()
         {
             ui->restoreButton->show();
             ui->configLabel->setText (tr ("These are the settings that can be safely changed.<br>For the others, edit this file:")
-                                      + QString ("<br><i>~/.config/Kvantum/%1/<b>%1.kvconfig</b></i>").arg (kvconfigTheme_));
-            showAnimated (ui->configLabel, 1000);
+                                      + QString ("<a href='%2'><br><i>~/.config/Kvantum/%1/<b>%1.kvconfig</b></i></a>").arg (kvconfigTheme_).arg (userConfigFile_));
+            showAnimated (ui->configLabel);
         }
 
         QCoreApplication::processEvents();
@@ -2632,11 +2755,7 @@ void KvantumManager::writeAppLists()
         {
             editTxt = editTxt.simplified();
             editTxt.remove (" ");
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
             QStringList appList = editTxt.split (",", Qt::SkipEmptyParts);
-#else
-            QStringList appList = editTxt.split (",", QString::SkipEmptyParts);
-#endif
             appList.removeDuplicates();
             appThemes_.insert (appTheme, appList);
         }
@@ -2799,10 +2918,11 @@ void KvantumManager::respectDE (bool checked)
         ui->spinSmall->setEnabled (!checked);
         ui->labelLarge->setEnabled (!checked);
         ui->spinLarge->setEnabled (!checked);
+        ui->checkBoxScrollJump->setEnabled (!checked);
     }
     else
     {
-        QSet<QByteArray> gtkDesktops = QSet<QByteArray>() << "gnome" << "unity" << "pantheon";
+        QSet<QByteArray> gtkDesktops = QSet<QByteArray>() << "gnome" << "pantheon";
         if (gtkDesktops.contains (desktop_))
         {
             //ui->labelX11Drag->setEnabled (!checked);
@@ -2810,20 +2930,20 @@ void KvantumManager::respectDE (bool checked)
             //ui->checkBoxBtnDrag->setEnabled (!checked);
             ui->checkBoxIconlessBtn->setEnabled (!checked);
             ui->checkBoxIconlessMenu->setEnabled (!checked);
-            ui->checkBoxNoComposite->setEnabled (!checked);
-            ui->checkBoxBlurPopup->setEnabled (!ui->checkBoxNoComposite->isChecked()
-                                               && !ui->checkBoxBlurWindow->isChecked()
-                                               && !checked);
-            ui->checkBoxShadowlessPopup->setEnabled (!ui->checkBoxNoComposite->isChecked());
-            ui->checkBoxTrans->setEnabled (!ui->checkBoxNoComposite->isChecked() && !checked);
+            //ui->checkBoxNoComposite->setEnabled (!checked);
+            //ui->checkBoxShadowlessPopup->setEnabled (!ui->checkBoxNoComposite->isChecked());
+            //ui->checkBoxTrans->setEnabled (!ui->checkBoxNoComposite->isChecked() && !checked);
             bool enableTrans (!ui->checkBoxNoComposite->isChecked()
                               && ui->checkBoxTrans->isChecked()
                               && !checked);
-            ui->opaqueLabel->setEnabled (enableTrans);
+            /*ui->opaqueLabel->setEnabled (enableTrans);
             ui->opaqueEdit->setEnabled (enableTrans);
             ui->reduceOpacityLabel->setEnabled (enableTrans);
-            ui->spinReduceOpacity->setEnabled (enableTrans);
+            ui->spinReduceOpacity->setEnabled (enableTrans);*/
             ui->checkBoxBlurWindow->setEnabled (enableTrans);
+            ui->checkBoxBlurPopup->setEnabled (!ui->checkBoxNoComposite->isChecked()
+                                               && !ui->checkBoxBlurWindow->isChecked()
+                                               && !checked);
         }
         else ui->checkBoxDE->setEnabled (false);
     }
@@ -2845,15 +2965,11 @@ void KvantumManager::aboutDialog()
 {
     class AboutDialog : public QDialog {
     public:
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
         explicit AboutDialog (QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags()) : QDialog (parent, f) {
-#else
-        explicit AboutDialog (QWidget* parent = nullptr, Qt::WindowFlags f = nullptr) : QDialog (parent, f) {
-#endif
             aboutUi.setupUi (this);
             aboutUi.textLabel->setOpenExternalLinks (true);
 
-            QGraphicsOpacityEffect *opacity = new QGraphicsOpacityEffect();
+            QGraphicsOpacityEffect *opacity = new QGraphicsOpacityEffect;
             aboutUi.titleLabel->setGraphicsEffect (opacity);
             QPropertyAnimation *animation = new QPropertyAnimation (opacity, "opacity", this);
             animation->stop();
@@ -2889,10 +3005,7 @@ void KvantumManager::aboutDialog()
     };
 
     AboutDialog dialog (this);
-    QIcon icn = QIcon::fromTheme ("kvantum");
-    if (icn.isNull())
-        icn = QIcon (":/Icons/kvantumpreview/data/kvantum.svg");
-    dialog.setMainIcon (icn);
+    dialog.setMainIcon (QIcon::fromTheme ("kvantum", QIcon (":/Icons/kvantumpreview/data/kvantum.svg")));
     dialog.settMainTitle (QString ("<center><b><big>%1 %2</big></b></center><br>").arg (qApp->applicationName()).arg (qApp->applicationVersion()));
     dialog.setMainText ("<center> " + tr ("A tool for installing, selecting<br>and configuring <a href='https://github.com/tsujan/Kvantum'>Kvantum</a> themes") + " </center>\n<center> "
                         + tr ("Author: <a href='mailto:tsujan2000@gmail.com?Subject=My%20Subject'>Pedram Pourang (aka. Tsu Jan)</a> </center><br>"));

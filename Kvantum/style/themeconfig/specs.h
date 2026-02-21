@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2019 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2022 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -19,13 +19,10 @@
 #define SPEC_H
 
 #include <QStringList>
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
 #include "drag/windowmanager.h"
-#else
-#include "drag/windowmanager-old.h"
-#endif
 
 namespace Kvantum {
+
 /* Generic information about a theme */
 typedef struct {
   QString author;
@@ -115,7 +112,8 @@ typedef struct {
   /* do we have translucent windows and dialogs? */
   bool translucent_windows;
   /* reduce window opacity by this percentage
-     (if window translucency is enabled)? */
+     (if window translucency is enabled)?
+     A negative value means reducing only the opacity of inactive windows. */
   int reduce_window_opacity;
   /* the same as above but for menus */
   int reduce_menu_opacity;
@@ -137,6 +135,8 @@ typedef struct {
   /* depth of menu shadows */
   int menu_shadow_depth;
   int menu_separator_height;
+  /* the corner radius for blurring menus */
+  int menu_blur_radius;
   /* should menuitems spread across the whole menu horizontally? */
   bool spread_menuitems;
   /* overlap between a submenu and its parent */
@@ -146,6 +146,8 @@ typedef struct {
   int submenu_delay;
   /* depth of tooltip shadows */
   int tooltip_shadow_depth;
+  /* the corner radius for blurring tooltips */
+  int tooltip_blur_radius;
   /* no menu or tooltip shadow with compositing? */
   bool shadowless_popup;
   /* splitter width */
@@ -203,7 +205,7 @@ typedef struct {
   bool groupbox_top_label;
   /* shift the contents of a pushbutton when it's down?
      (the contennts are shifted by default) */
-  bool button_contents_shift;
+  //bool button_contents_shift;
   /* draw scrollbars within view */
   bool scrollbar_in_view;
   /* show scrollbars only when needed? */
@@ -211,8 +213,6 @@ typedef struct {
   /* should transient scrollbars have
      translucent grooves behind them when needed? */
   bool transient_groove;
-  /* should we request a dark titlebar under Gtk desktops? */
-  bool dark_titlebar;
   /* the layout of dialog buttons */
   int dialog_button_layout;
 
@@ -271,9 +271,6 @@ typedef struct {
   /* blur the region behind a window background that is
      explicitly made translucent by its app? */
   bool blur_translucent;
-  /* should all texts have opaque colors?
-     (used internally as a workaround) */
-  bool opaque_colors;
   /* transparent background for the label of KTitleWidget
      (nice when the window bg has a gradient) */
   bool transparent_ktitle_label;
@@ -314,6 +311,8 @@ typedef struct {
   /* enable window translucency and gradient with
      non-integer scale factors? (disabled because of Qt's bugs) */
   bool noninteger_translucency;
+  /* no blurring for inactive windows? */
+  bool blur_only_active_window;
 } hacks_spec;
 
 /* Generic information about a frame */
@@ -484,7 +483,7 @@ static inline void default_theme_spec(theme_spec &tspec) {
   tspec.group_toolbar_buttons = false;
   tspec.toolbar_item_spacing = 0;
   tspec.toolbar_interior_spacing = 0;
-  tspec.toolbar_separator_thickness = 0;
+  tspec.toolbar_separator_thickness = -1;
   tspec.center_toolbar_handle = false;
   tspec.slim_toolbars = false;
   tspec.merge_menubar_with_toolbar = false;
@@ -509,10 +508,12 @@ static inline void default_theme_spec(theme_spec &tspec) {
   tspec.no_window_pattern = false;
   tspec.menu_shadow_depth = 0;
   tspec.menu_separator_height = 10;
+  tspec.menu_blur_radius = 0;
   tspec.spread_menuitems = false;
   tspec.submenu_overlap = 0;
   tspec.submenu_delay = 250;
   tspec.tooltip_shadow_depth = 0;
+  tspec.tooltip_blur_radius = 0;
   tspec.shadowless_popup = false;
   tspec.splitter_width = 7;
   tspec.scroll_width = 12;
@@ -538,14 +539,13 @@ static inline void default_theme_spec(theme_spec &tspec) {
   tspec.scrollable_menu = true;
   tspec.fill_rubberband = false;
   tspec.groupbox_top_label = false;
-  tspec.button_contents_shift = true;
+  //tspec.button_contents_shift = true;
   tspec.scrollbar_in_view = false;
   tspec.transient_scrollbar = false;
   tspec.transient_groove = false;
-  tspec.dark_titlebar = false;
   tspec.dialog_button_layout = 0;
-  tspec.layout_spacing = 2;
-  tspec.layout_margin = 4;
+  tspec.layout_spacing = 3;
+  tspec.layout_margin = 6;
   tspec.small_icon_size = 16;
   tspec.large_icon_size = 32;
   tspec.button_icon_size = 16;
@@ -562,7 +562,6 @@ static inline void default_hacks_spec(hacks_spec &hspec) {
   hspec.transparent_pcmanfm_view = false;
   hspec.lxqtmainmenu_iconsize = 0;
   hspec.blur_translucent = false;
-  hspec.opaque_colors = false;
   hspec.transparent_ktitle_label = false;
   hspec.transparent_menutitle = false;
   hspec.respect_darkness = false;
@@ -580,7 +579,9 @@ static inline void default_hacks_spec(hacks_spec &hspec) {
   hspec.centered_forms = false;
   hspec.kinetic_scrolling = false;
   hspec.noninteger_translucency = false;
+  hspec.blur_only_active_window = false;
 }
+
 }
 
 #endif

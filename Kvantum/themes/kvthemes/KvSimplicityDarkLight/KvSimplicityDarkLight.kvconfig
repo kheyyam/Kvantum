@@ -7,12 +7,15 @@ left_tabs=false
 attach_active_tab=false
 embedded_tabs=true
 mirror_doc_tabs=false
+bold_active_tab=true
 group_toolbar_buttons=true
 spread_progressbar=true
 composite=true
 menu_shadow_depth=7
+menu_blur_radius=2
 spread_menuitems=true
 tooltip_shadow_depth=6
+tooltip_blur_radius=2
 scroll_width=12
 scroll_arrows=false
 scroll_min_extent=50
@@ -45,13 +48,11 @@ groupbox_top_label=false
 inline_spin_indicators=true
 remove_extra_frames=true
 joined_inactive_tabs=true
-layout_spacing=2
+layout_spacing=3
 submenu_overlap=0
 tooltip_delay=-1
-button_contents_shift=true
 animate_states=true
 no_window_pattern=false
-dark_titlebar=true
 
 [GeneralColors]
 window.color=#3e3e3e
@@ -76,6 +77,7 @@ inactive.text.color=#dcdcdc
 inactive.window.text.color=#dcdcdc
 link.color=#2EB8E6
 link.visited.color=#FF6666
+progress.indicator.text.color=black
 
 [Hacks]
 transparent_ktitle_label=true
@@ -94,6 +96,7 @@ normal_default_pushbutton=false
 single_top_toolbar=true
 tint_on_mouseover=0
 transparent_arrow_button=true
+centered_forms=true
 
 [PanelButtonCommand]
 frame=true
@@ -183,9 +186,9 @@ frame.element=lineedit
 interior.element=lineedit
 text.margin.top=3
 text.margin.bottom=3
-text.margin.left=1
-text.margin.right=1
-frame.expansion=10
+text.margin.left=3
+text.margin.right=3
+frame.expansion=12
 
 [DropDownButton]
 inherits=PanelButtonCommand
@@ -217,7 +220,7 @@ text.normal.color=white
 text.focus.color=white
 text.toggle.color=black
 min_width=4font
-min_height=1.87font
+min_height=1.4font
 
 [TabFrame]
 inherits=PanelButtonCommand
@@ -391,6 +394,8 @@ frame.expansion=0
 
 [ComboBox]
 inherits=PanelButtonCommand
+text.margin.left=6
+text.margin.right=6
 
 [Menu]
 inherits=PanelButtonCommand

@@ -26,7 +26,6 @@ toolbar_icon_size=16
 toolbar_interior_spacing=3
 animate_states=true
 alt_mnemonic=true
-button_contents_shift=true
 button_icon_size=16
 combo_as_lineedit=true
 combo_menu=true
@@ -39,8 +38,6 @@ joined_inactive_tabs=true
 no_inactive_tab_expansion=true
 tab_button_extra_margin=0.15font
 large_icon_size=32
-layout_margin=4
-layout_spacing=2
 merge_menubar_with_toolbar=false
 respect_DE=true
 scroll_arrows=true
@@ -58,7 +55,6 @@ submenu_delay=250
 transient_groove=false
 check_size=14
 remove_extra_frames=true
-dark_titlebar=true
 
 [GeneralColors]
 window.color=#504640

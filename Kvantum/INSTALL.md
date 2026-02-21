@@ -12,9 +12,8 @@ Table of contents
      - [Tumbleweed](#tumbleweed)
    - [Red Hat based distributions](#red-hat-based-distributions)
    - [Solus](#solus)
+   - [NixOS](#nixos)
 - [Compilation](#compilation)
-   - [qmake](#with-qmake)
-   - [cmake](#with-cmake)
 - [Installation](#installation)
 - [Usage](#usage)
    - [Desktop environments](#desktop-environments)
@@ -32,7 +31,7 @@ Before compiling Kvantum, you will need:
 
  * GCC
  * X11
- * Qt5
+ * Qt6
 
 **See [Distributions](#distributions) for distro specific information on required packages and direct installation methods.**
 
@@ -44,17 +43,17 @@ If you want to compile Kvantum from its source, install the following packages:
 
  * `gcc` (or gcc-multilib for multilib systems)
  * `libx11` and `libxext` (for X11)
- * `qt5-base`, `qt5-svg` and `qt5-x11extras` (for Qt5)
- * `kwindowsystem` (required with Qt >= 5.11)
- * `qt5-tools` (for localization if you need it)
+ * `qt6-base` and `qt6-svg` (for Qt6)
+ * `kwindowsystem`
+ * `qt6-tools` (for localization if you need it)
 
 To install Kvantum directly, you have the choice to install the stable package **or**, preferably, the git package. Respectively, execute:
 
-    sudo pacman -S kvantum-qt5
+    sudo pacman -S kvantum
 
 Or:
 
-    yay -S kvantum-qt5-git
+    yay -S kvantum-qt6-git
 
 NOTE: `yay` only serves as an example here.
 
@@ -64,17 +63,17 @@ If you want to compile Kvantum from its source, install these packages:
 
  * `g++`
  * `libx11-dev` and `libxext-dev` (for X11)
- * `qtbase5-dev`, `libqt5svg5-dev` and `libqt5x11extras5-dev` (for Qt5)
- * `libkf5windowsystem-dev` (required with Qt >= 5.11)
- * `qttools5-dev-tools` (for localization if you need it)
+ * `qt6-base-dev` and `qt6-svg-dev` (for Qt6)
+ * `libkf6windowsystem-dev`
+ * `qt6-base-dev-tools` (for localization if you need it)
 
 In Ubuntu, you can install Kvantum directly with:
 
     sudo add-apt-repository ppa:papirus/papirus
     sudo apt update
-    sudo apt install qt5-style-kvantum qt5-style-kvantum-themes
+    sudo apt install qt6-style-kvantum qt6-style-kvantum-themes
 
-Since the PPA splits the package into `qt5-style-kvantum` and `qt5-style-kvantum-themes`, both of them should be installed.
+Since the PPA splits the package into `qt6-style-kvantum` and `qt6-style-kvantum-themes`, both of them should be installed.
 
 ### Gentoo-based distributions
 
@@ -91,20 +90,20 @@ If you want to compile Kvantum from its source, install these packages:
  * `gcc-c++`
  * `libX11-devel`
  * `libXext-devel`
- * `libqt5-qtx11extras-devel`
- * `libqt5-qtbase-devel`
- * `libqt5-qtsvg-devel`
- * `libqt5-qttools-devel`
- * `kwindowsystem-devel` (required with Qt >= 5.11)
+ * `libqt6-qtbase-devel`
+ * `libqt6-qtsvg-devel`
+ * `libqt6-qttools-devel`
+ * `kwindowsystem-devel`
 
 #### Leap
 see [Compilation](#compilation) on how to compile and install Kvantum.
 
 #### Tumbleweed
-Thanks to [trmdi](https://github.com/trmdi), you can install Kvantum directly, by executing:
 
-    sudo zypper ar obs://home:trmdi trmdi
-    sudo zypper in -r trmdi kvantum
+Kvantum is available in the official openSUSE Tumbleweed repositories (repo-oss):
+
+    sudo zypper refresh
+    sudo zypper install kvantum-manager kvantum-qt6
 
 ### Red Hat based distributions
 
@@ -113,11 +112,10 @@ If you want to compile Kvantum from its source in Red Hat based distributions li
  * `gcc-c++`
  * `libX11-devel`
  * `libXext-devel`
- * `qt5-qtx11extras-devel`
- * `qt5-qtbase-devel`
- * `qt5-qtsvg-devel`
- * `qt5-qttools-devel`
- * `kf5-kwindowsystem-devel` (required with Qt >= 5.11)
+ * `qt6-qtbase-devel`
+ * `qt6-qtsvg-devel`
+ * `qt6-qttools-devel`
+ * `kf6-kwindowsystem-devel`
 
 To install Kvantum directly, execute:
 
@@ -127,23 +125,22 @@ To install Kvantum directly, execute:
 
 To compile Kvantum from source on Solus, you would need the `system.devel` component installed:
 
-* `sudo eopkg install -c system.devel`
+    sudo eopkg install -c system.devel
 
 There are no pre-built Kvantum eopkg installers avaialble, so proceed to [Compilation](#compilation) to compile Kvantum yourself.
 
+### NixOS
+
+To install Qt5-based Kvantum on NixOS, add the following line to `configuration.nix`:
+
+    environment.systemPackages = with pkgs; [ libsForQt5.qtstyleplugin-kvantum ];
+
+If you want to compile Kvantum from its source, copy the Nix expression of Kvantum [here](https://github.com/NixOS/nixpkgs/blob/nixos-22.05/pkgs/development/libraries/qtstyleplugin-kvantum/default.nix), then paste it in a nix file, for example `kvantum.nix`, and put it in `/etc/nixos/`, then add the following line to `configuration.nix`:
+
+    environment.systemPackages = with pkgs; [ (import ./kvantum.nix pkgs) ];
+
+
 ## Compilation
-
-There are two ways to compile Kvantum: with `qmake` or with `cmake`.
-
-### With qmake
-
-Just open a terminal inside this folder and issue the following command:
-
-    qmake && make
-
-With some distros, you might need to put the full path of `qmake` in the above command.
-
-### With cmake
 
 Open a terminal inside this folder and issue the following commands:
 
@@ -151,19 +148,19 @@ Open a terminal inside this folder and issue the following commands:
     cmake ..
     make
 
-If you want to install Kvantum in a nonstandard path (which is not recommended), you could add the option `-DCMAKE_INSTALL_PREFIX=YOUR_SELECTED_PATH` to the `cmake` command.
+In some distros, you may need to be more explicit and use `cmake .. -DCMAKE_INSTALL_PREFIX=/usr` for installing Kvantum under `/usr`, in contrast to `/usr/local`. The latter place may not be good in Linux distros and could cause troubles later.
+
+NOTE 1. Kvantum needs `kwindowsystem` only to support some KWin effects (like blur effect). `kwindowsystem` is a small package which does not depend on KDE itself. However, if you do not need those effects, you could use `cmake .. -DWITHOUT_KF=ON`.
+
+NOTE 2: You can also compile Kvantum's Qt5 plugin by using `cmake .. -DENABLE_QT5=ON`, but you need `qt5-x11extras` (or whatever the name of its dev package is in your distro) in addition to the Qt5 counterparts of the required packages.
 
 ## Installation
 
-Then, use this command for installation:
+Use this command for installation:
 
     sudo make install
 
-If you have compiled Kvantum with `qmake`, the following command cleans the source completely and makes it ready for another compilation:
-
-    make distclean
-
-If you have used `cmake` for compilation, to compile Kvantum again, first remove the contents of the build directory.
+To compile Kvantum again (e.g., agaisnt Qt5), first remove the contents of the build directory.
 
 ## Usage
 
@@ -180,26 +177,25 @@ Logging out and in would be good for Plasma to see the new theme.
 
 Just select *kvantum* from *Configuration Center → Appearance → Widget Style*. Kvantum Manager is also shown in Configuration Center for changing the Kvantum theme.
 
-In case you use Compton as the X compositor (not recommended), be sure to disable its shadow and blurring for composited Qt menus with lines like these in `~/.config/compton.conf`:
-
-    shadow-exclude = [ "argb && (_NET_WM_WINDOW_TYPE@:a *= 'MENU' || _NET_WM_WINDOW_TYPE@:a *= 'COMBO')" ];
-    blur-background-exclude = [ "(_NET_WM_WINDOW_TYPE@:a *= 'MENU' || _NET_WM_WINDOW_TYPE@:a *= 'COMBO')" ];
+If the Wayland/X11 compositor you use gives shadows to menus and tooltips, make sure to disable that, or if that is not possible, check *Kvantum Manager → Configure Active Theme → Compositing & General Look → Shadowless menus and tooltips* as a workaround.
 
 #### In Other DEs:
 
-In desktop environments that do not have a Qt5 configuration utility, you could use this command to run a Qt5 application APP:
+*NOTE: It is highly preferable that you install a Qt configuration utility (which provides a Qt plugin) and select Kvantum with it, instead of using the following methods directly.* Otherwise, there will be no guarantee that any style, other than Qt's default style, will work properly with all Qt applications.
+
+That being said, you could try this command to run a Qt application APP with Kvantum:
 
     APP -style kvantum
 
-Or, better, set the environment variable `QT_STYLE_OVERRIDE` to `kvantum`. For example, you could add this line to your `~/.profile` or `~/.bashrc`:
+To style all native Qt applications with Kvantum, set the environment variable `QT_STYLE_OVERRIDE` to `kvantum`. Most Wayland compositors have ways of setting environment variables. Under X11, you could add this line to your `~/.profile` or `~/.bashrc`:
 
     export QT_STYLE_OVERRIDE=kvantum
 
-If the desktop environment you use does not source `~/.profile`, you could try `~/.config/environment.d/*.conf`: make a file like `~/.config/environment.d/qt.conf`, put this into it and reboot:
+Under GNOME and desktop environments that do not source `~/.profile`, you could make a file like `~/.config/environment.d/qt.conf` with the following line in it and reboot:
 
     QT_STYLE_OVERRIDE=kvantum
 
-The last resort is `/etc/environment` but most desktop environments have GUI tools for setting environment variables.
+Touching `/etc/environment` is *not* recommended.
 
 ### Using other themes
 
@@ -211,9 +207,9 @@ For the running parts of KDE/LXQt to recognize the new Kvantum theme, the easies
 
 The blur effect of any compositor can be used with Kvantum when its active theme has translucent backgrounds. However, Kvantum can control KWin's blur effect with translucent menus and tooltips as well as explicitly translucent windows (like those of QTerminal, Konsole or LXQt Panel). Enabling blur options in *Kvantum Manager* has effect only when KWin's blur effect is enabled; otherwise, there will be no blurring or another compositor will control how translucent backgrounds are blurred.
 
-In the case of compositors other than KWin, it is preferable that menus and tooltips have neither shadow nor blurring because those compositors cannot distinguish the shadows that Kvantum gives to menus and tooltips. But, if disabling menu/tooltip shadow and blurring is not possible with them, *Kvantum Manager → Compositing & General Look → Shadowless menus and tooltips* could be checked as a workaround.
+In the case of compositors other than KWin, it is preferable that menus and tooltips have neither shadow nor blurring because those compositors cannot distinguish the shadows which Kvantum gives to menus and tooltips. But, if disabling menu/tooltip shadow and blurring is not possible with them, *Kvantum Manager → Configure Active Theme → Compositing & General Look → Shadowless menus and tooltips* could be checked as a workaround.
 
-Make sure that you never have two compositors running together! KWin is highly recommended, whether with KDE or with LXQt. It supports both X11 and Wayland and has a decent blur effect.
+Under X11, make sure that you never have two compositors running together! KWin is highly recommended, whether with KDE or with LXQt. It supports both X11 and Wayland and has a decent blur effect.
 
 ### Notes for theme makers
 
@@ -229,7 +225,7 @@ Themes can also be packaged as deb, rpm, xz,... packages and installed as root:
 
 Please see [Theme-Making](doc/Theme-Making.pdf) for more information on theme installation paths and their priorities.
 
-The default Qt5 installation adds several root themes, that can be selected by using *Kvantum Manager*. Their corresponding KDE color schemes are also installed.
+The default Qt installation adds several root themes, that can be selected by using *Kvantum Manager*. Their corresponding KDE color schemes are also installed.
 
 ## GTK
 

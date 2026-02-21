@@ -946,9 +946,6 @@ theme_spec ThemeConfig::getThemeSpec()
   v = getValue(KSL("General"),KSL("no_window_pattern"));
   r.no_window_pattern = v.toBool();
 
-  v = getValue(KSL("General"),KSL("dark_titlebar"));
-  r.dark_titlebar = v.toBool();
-
   return r;
 }
 
@@ -1113,8 +1110,8 @@ hacks_spec ThemeConfig::getHacksSpec() const
   v = getValue(KSL("Hacks"),KSL("centered_forms"));
   r.centered_forms = v.toBool();
 
-  v = getValue(KSL("Hacks"),KSL("kinetic_scrolling"));
-  r.kinetic_scrolling = v.toBool();
+  /*v = getValue(KSL("Hacks"),KSL("kinetic_scrolling"));
+  r.kinetic_scrolling = v.toBool();*/
 
   v = getValue(KSL("Hacks"),KSL("noninteger_translucency"));
   r.noninteger_translucency = v.toBool();

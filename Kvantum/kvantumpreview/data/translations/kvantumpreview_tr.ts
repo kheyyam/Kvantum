@@ -78,59 +78,59 @@ basma düğmesi</translation>
         <translation>Düğme Kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="361"/>
+        <location filename="../../KvantumPreviewBase.ui" line="374"/>
         <source>Tool buttons</source>
         <translation>Araç düğmeleri</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="369"/>
-        <location filename="../../KvantumPreviewBase.ui" line="446"/>
+        <location filename="../../KvantumPreviewBase.ui" line="382"/>
+        <location filename="../../KvantumPreviewBase.ui" line="459"/>
         <source>Simple toolbutton</source>
         <translation>Basit araç düğmesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="453"/>
-        <location filename="../../KvantumPreviewBase.ui" line="464"/>
+        <location filename="../../KvantumPreviewBase.ui" line="466"/>
+        <location filename="../../KvantumPreviewBase.ui" line="477"/>
         <source>Multi-line
 toolbutton</source>
         <translation>Çok satırlı
 araç düğmesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="472"/>
-        <location filename="../../KvantumPreviewBase.ui" line="495"/>
+        <location filename="../../KvantumPreviewBase.ui" line="485"/>
+        <location filename="../../KvantumPreviewBase.ui" line="508"/>
         <source>Toggle toolbutton
 with an arrow</source>
         <translation>Araç düğmesini bir okla
 aç/kapat</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="560"/>
-        <location filename="../../KvantumPreviewBase.ui" line="584"/>
+        <location filename="../../KvantumPreviewBase.ui" line="573"/>
+        <location filename="../../KvantumPreviewBase.ui" line="597"/>
         <source>Toolbutton with 32px SVG icon
 and text below</source>
         <translation>32px SVG simgeli ve aşağıdaki
 metne sahip araç düğmesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="605"/>
-        <location filename="../../KvantumPreviewBase.ui" line="626"/>
+        <location filename="../../KvantumPreviewBase.ui" line="618"/>
+        <location filename="../../KvantumPreviewBase.ui" line="639"/>
         <source>Toolbutton with text below
 and arrow</source>
         <translation>Aşağıdaki metni ve oku
 içeren araç düğmesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="644"/>
-        <location filename="../../KvantumPreviewBase.ui" line="665"/>
+        <location filename="../../KvantumPreviewBase.ui" line="657"/>
+        <location filename="../../KvantumPreviewBase.ui" line="678"/>
         <source>Toolbutton with icon at the side
 and arrow</source>
         <translation>Yan ve ok simgeli
 araç düğmesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="683"/>
-        <location filename="../../KvantumPreviewBase.ui" line="710"/>
+        <location filename="../../KvantumPreviewBase.ui" line="696"/>
+        <location filename="../../KvantumPreviewBase.ui" line="723"/>
         <source>Toggle toolbutton with icon,
 ordinary arrow
 and dropdown menu arrow</source>
@@ -139,15 +139,20 @@ normal ok ve
 açılır menü oku ile aç/kapat</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="515"/>
-        <location filename="../../KvantumPreviewBase.ui" line="539"/>
+        <location filename="../../KvantumPreviewBase.ui" line="528"/>
+        <location filename="../../KvantumPreviewBase.ui" line="552"/>
         <source>Toolbutton with 32px PNG icon
 beside text</source>
         <translation>Metnin yanında 32 px PNG simgeli
 araç düğmesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="402"/>
+        <location filename="../../KvantumPreviewBase.ui" line="366"/>
+        <source>Push button with menu</source>
+        <translation>Menü ile basma düğmesi</translation>
+    </message>
+    <message>
+        <location filename="../../KvantumPreviewBase.ui" line="415"/>
         <source>Toggle
 tool
 button
@@ -166,507 +171,519 @@ düğmesini
 aç/kapat</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="791"/>
+        <location filename="../../KvantumPreviewBase.ui" line="804"/>
         <source>Auto-raise</source>
         <translation>Otomatik-yükselt</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="812"/>
+        <location filename="../../KvantumPreviewBase.ui" line="825"/>
         <source>Radio/Check buttons</source>
         <translation>Radyo/Onay düğmeleri</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="833"/>
         <location filename="../../KvantumPreviewBase.ui" line="846"/>
+        <location filename="../../KvantumPreviewBase.ui" line="859"/>
         <source>Simple radio button</source>
         <translation>Basit radyo düğmesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="856"/>
-        <location filename="../../KvantumPreviewBase.ui" line="867"/>
+        <location filename="../../KvantumPreviewBase.ui" line="869"/>
+        <location filename="../../KvantumPreviewBase.ui" line="880"/>
         <source>Multi-line
 radio button</source>
         <translation>Çok satırlı
 radyo düğmesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="878"/>
-        <location filename="../../KvantumPreviewBase.ui" line="904"/>
+        <location filename="../../KvantumPreviewBase.ui" line="891"/>
+        <location filename="../../KvantumPreviewBase.ui" line="917"/>
         <source>Radio button with 32px SVG icon</source>
         <translation>32px SVG simgeli radyo düğmesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="927"/>
         <location filename="../../KvantumPreviewBase.ui" line="940"/>
+        <location filename="../../KvantumPreviewBase.ui" line="953"/>
         <source>Simple check box</source>
         <translation>Basit onay kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="950"/>
-        <location filename="../../KvantumPreviewBase.ui" line="961"/>
+        <location filename="../../KvantumPreviewBase.ui" line="963"/>
+        <location filename="../../KvantumPreviewBase.ui" line="974"/>
         <source>Multi-line
 check box</source>
         <translation>Çok satırlı
 onay kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="969"/>
         <location filename="../../KvantumPreviewBase.ui" line="982"/>
+        <location filename="../../KvantumPreviewBase.ui" line="995"/>
         <source>Tri-state check box</source>
         <translation>Üç durumlu onay kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="992"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1006"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1005"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1019"/>
         <source>Check box with icon</source>
         <translation>Simgeli onay kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1062"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1075"/>
         <source>Combos/Spins/Inputs</source>
         <translation>Birleşikler/Döndürmeler/Girişler</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1096"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1182"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1251"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1365"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1437"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1495"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1188"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1261"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1423"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1505"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1594"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1607"/>
         <source>Frameless (no difference)</source>
         <translation>Çerçevesiz (fark yok)</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1107"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1146"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1110"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1149"/>
         <source>Standard combo box</source>
         <translation>Standart birleşik giriş kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1116"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1155"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1119"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1158"/>
         <source>Standard combo box 1</source>
         <translation>Standart birleşik giriş kutusu 1</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1124"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1160"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1127"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1166"/>
         <source>Standard combo box 2</source>
         <translation>Standart birleşik giriş kutusu 2</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1129"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1165"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1132"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1171"/>
         <source>Standard combo box 3</source>
         <translation>Standart birleşik giriş kutusu 3</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1134"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1170"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1137"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1176"/>
         <source>Standard combo box 4</source>
         <translation>Standart birleşik giriş kutusu 4</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1191"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1260"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1374"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1446"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1197"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1270"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1432"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1514"/>
         <source>Frameless 1</source>
         <translation>Çerçevesiz 1</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1196"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1265"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1379"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1451"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1206"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1279"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1441"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1523"/>
         <source>Frameless 2</source>
         <translation>Çerçevesiz 2</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1201"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1270"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1384"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1456"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1211"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1284"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1446"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1528"/>
         <source>Frameless 3</source>
         <translation>Çerçevesiz 3</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1206"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1275"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1389"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1461"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1216"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1289"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1451"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1533"/>
         <source>Frameless 4</source>
         <translation>Çerçevesiz 4</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1211"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1394"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1221"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1294"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1456"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1538"/>
         <source>Frameless 5</source>
         <translation>Çerçevesiz 5</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1216"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1399"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1226"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1299"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1461"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1543"/>
         <source>Frameless 6</source>
         <translation>Çerçevesiz 6</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1221"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1404"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1231"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1304"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1466"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1548"/>
         <source>Frameless 7</source>
         <translation>Çerçevesiz 7</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1226"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1409"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1236"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1309"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1471"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1553"/>
         <source>Frameless 8</source>
         <translation>Çerçevesiz 8</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1231"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1414"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1241"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1314"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1476"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1558"/>
         <source>Frameless 9</source>
         <translation>Çerçevesiz 9</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1236"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1419"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1246"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1319"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1481"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1563"/>
         <source>Frameless 10</source>
         <translation>Çerçevesiz 10</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1287"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1326"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1331"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1374"/>
         <source>Editable combo box</source>
         <translation>Düzenlenebilir birleşik kutu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1296"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1335"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1340"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1383"/>
         <source>Editable combo box 1</source>
         <translation>Düzenlenebilir birleşik kutu 1</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1301"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1340"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1349"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1392"/>
         <source>Editable combo box 2</source>
         <translation>Düzenlenebilir birleşik kutu 2</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1306"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1345"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1354"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1397"/>
         <source>Editable combo box 3</source>
         <translation>Düzenlenebilir birleşik kutu 3</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1311"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1350"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1359"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1402"/>
         <source>Editable combo box 4</source>
         <translation>Düzenlenebilir birleşik kutu 4</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1469"/>
-        <location filename="../../KvantumPreviewBase.ui" line="1482"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1571"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1584"/>
         <source>Line-edit</source>
         <translation>Satır-düzelt</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="1561"/>
+        <location filename="../../KvantumPreviewBase.ui" line="1673"/>
         <source>Sliders/Scrolls/Progress/Dial</source>
         <translation>Kaydırıcılar/Kaydırmalar/İlerlemeler/Dial</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2118"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2230"/>
         <source>Containers</source>
         <translation>Konteynırlar</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2139"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2251"/>
         <source>Header 1</source>
         <translation>Başlık 1</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2148"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2260"/>
         <source>Header 2</source>
         <translation>Başlık 2</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2156"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2268"/>
         <source>Header 3</source>
         <translation>Başlık 3</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2161"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2259"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2273"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2371"/>
         <source>3rd Item</source>
         <translation>Üçüncü Öğe</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2169"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2247"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2281"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2359"/>
         <source>2nd Item</source>
         <translation>İkinci Öğe</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2173"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2209"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2285"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2321"/>
         <source>2nd Child</source>
         <translation>İkinci Çıktı</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2178"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2214"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2290"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2326"/>
         <source>1st Child</source>
         <translation>Birinci Çıktı</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2184"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2232"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2296"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2344"/>
         <source>1st Item</source>
         <translation>Birinci Öğe</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2204"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2316"/>
         <source>3rd Child</source>
         <translation>Üçüncü Çocuk</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2502"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2614"/>
         <source>Row 0</source>
         <translation>Satır 0</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2507"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2619"/>
         <source>Row 1</source>
         <translation>Satır 1</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2512"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2624"/>
         <source>Column 0</source>
         <translation>Sütun 0</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2520"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2632"/>
         <source>Column 1</source>
         <translation>Sütun 1</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2525"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2637"/>
         <source>0-0</source>
         <translation>0-0</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2533"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2645"/>
         <source>0-1</source>
         <translation>0-1</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2541"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2653"/>
         <source>1-0</source>
         <translation>1-0</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2549"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2661"/>
         <source>1-1</source>
         <translation>1-1</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2191"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2194"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2303"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2306"/>
         <source>Editable</source>
         <translation>Düzenlenebilir</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2221"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2333"/>
         <source>Non-Editable</source>
         <translation>Düzenlenemez</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2269"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2381"/>
         <source>Subwindow</source>
         <translation>Alt pencere</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2316"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2428"/>
         <source>Panel frame</source>
         <translation>Panel çerçevesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2335"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2476"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2568"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2447"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2588"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2680"/>
         <source>GroupBox</source>
         <translation>Grup Kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2355"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2407"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2701"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2778"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2826"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2467"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2519"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2813"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2890"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2938"/>
         <source>Tab 1</source>
         <translation>Sekme 1</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2361"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2473"/>
         <source>Page 1 (disabled)</source>
         <translation>Sayfa 1 (devre dışı)</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2373"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2421"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2719"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2792"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2840"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2485"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2533"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2831"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2904"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2952"/>
         <source>Tab 2</source>
         <translation>Sekme 2</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2379"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2491"/>
         <source>Page 2 (disabled)</source>
         <translation>Sayfa 2 (devre dışı)</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2413"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2606"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2661"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2784"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2832"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2525"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2718"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2773"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2896"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2944"/>
         <source>Page 1</source>
         <translation>Sayfa 1</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2427"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2634"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2674"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2725"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2798"/>
-        <location filename="../../KvantumPreviewBase.ui" line="2846"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2539"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2746"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2786"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2837"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2910"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2958"/>
         <source>Page 2</source>
         <translation>Sayfa 2</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2451"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2563"/>
         <source>Stack widget (page1)</source>
         <translation>Yığın widget&apos;ı (sayfa1)</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2465"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2577"/>
         <source>Stack Widget (page2)</source>
         <translation>Yığın Widget&apos;ı (sayfa2)</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2482"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2594"/>
         <source>Group box</source>
         <translation>Grup kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2560"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2672"/>
         <source>Dock Widget</source>
         <translation>Rıhtım Widget&apos;i</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2577"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2689"/>
         <source>Checkable group box</source>
         <translation>Onaylanabilir grup kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2612"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2724"/>
         <source>Tool Box</source>
         <translation>Araç Kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2707"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2819"/>
         <source>Document mode</source>
         <translation>Belge kipi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2745"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2857"/>
         <source>Box frame</source>
         <translation>Kutu çerçevesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2875"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2987"/>
         <source>&amp;File</source>
         <translation>&amp;Dosya</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2879"/>
+        <location filename="../../KvantumPreviewBase.ui" line="2991"/>
         <source>&amp;Submenu</source>
         <translation>&amp;Alt menü</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2899"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3011"/>
         <source>toolBar</source>
         <translation>araçÇubuğu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2919"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3031"/>
         <source>toolBar_2</source>
         <translation>araçÇubuğu_2</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2941"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3053"/>
         <source>&amp;Quit</source>
         <translation>&amp;Çık</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2944"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3056"/>
         <source>Quit</source>
         <translation>Çık</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2947"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3059"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2955"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3067"/>
         <source>&amp;Checkbox</source>
         <translation>&amp;Onay kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2968"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3080"/>
         <source>Toggle Layout</source>
         <translation>Düzeni Değiştir</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2971"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3083"/>
         <source>Toggle layout direction</source>
         <translation>Düzen yönünü değiştir</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2983"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3095"/>
         <source>&amp;Doc Mode</source>
         <translation>&amp;Belge Kipi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2986"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3098"/>
         <source>Show tabs in the document mode</source>
         <translation>Sekmeleri belge kipinde göster</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="2998"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3110"/>
         <source>Menu Button</source>
         <translation>Menü Düğmesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="3001"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3113"/>
         <source>Hold pressed to show a menu</source>
         <translation>Bir menüyü göstermek için basılı tutun</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="3012"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3124"/>
         <source>C&amp;heckbox</source>
         <translation>O&amp;nay kutusu</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="3020"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3132"/>
         <source>&amp;Radio button</source>
         <translation>&amp;Radyo düğmesi</translation>
     </message>
     <message>
-        <location filename="../../KvantumPreviewBase.ui" line="3028"/>
+        <location filename="../../KvantumPreviewBase.ui" line="3140"/>
         <source>Radio &amp;button</source>
         <translation>Radyo &amp;düğmesi</translation>
     </message>

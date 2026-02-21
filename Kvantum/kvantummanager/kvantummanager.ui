@@ -31,7 +31,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page">
        <attribute name="label">
@@ -50,7 +50,7 @@
            <bool>true</bool>
           </property>
           <property name="textInteractionFlags">
-           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           <set>Qt::LinksAccessibleByMouse</set>
           </property>
          </widget>
         </item>
@@ -233,7 +233,7 @@ the theme is already used.</string>
            <bool>true</bool>
           </property>
           <property name="textInteractionFlags">
-           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           <set>Qt::LinksAccessibleByMouse</set>
           </property>
          </widget>
         </item>
@@ -257,16 +257,16 @@ the theme is already used.</string>
         <string>Configure Active Theme</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_4">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMinimumSize</enum>
+        </property>
         <item row="0" column="0" colspan="2">
          <widget class="QLabel" name="configLabel">
-          <property name="text">
-           <string notr="true">W&lt;br&gt;W&lt;br&gt;W</string>
-          </property>
           <property name="wordWrap">
            <bool>true</bool>
           </property>
           <property name="textInteractionFlags">
-           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           <set>Qt::LinksAccessibleByMouse</set>
           </property>
          </widget>
         </item>
@@ -335,6 +335,9 @@ settings of this theme.
         </item>
         <item row="11" column="1" alignment="Qt::AlignRight">
          <widget class="QPushButton" name="saveButton">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="toolTip">
            <string>Save this configuration
 (Ctrl+S)</string>
@@ -362,14 +365,13 @@ settings of this theme.
               <number>0</number>
              </property>
              <widget class="QWidget" name="tab">
-              <property name="toolTip">
-               <string>Uncheck all these boxes if you want all
-widgets to appear as they are by default.</string>
-              </property>
               <attribute name="title">
                <string>Hacks</string>
               </attribute>
               <layout class="QGridLayout" name="gridLayout_8">
+               <property name="sizeConstraint">
+                <enum>QLayout::SetMinimumSize</enum>
+               </property>
                <item row="0" column="0">
                 <spacer name="horizontalSpacer_1">
                  <property name="orientation">
@@ -411,6 +413,18 @@ By default, it has the base background.</string>
                  </property>
                 </spacer>
                </item>
+               <item row="0" column="3" colspan="2">
+                <widget class="QCheckBox" name="checkBoxNormalBtn">
+                 <property name="toolTip">
+                  <string>No bold font for default push buttons?
+
+Such push buttons have bold text by default.</string>
+                 </property>
+                 <property name="text">
+                  <string>Normal font for default push buttons</string>
+                 </property>
+                </widget>
+               </item>
                <item row="0" column="5">
                 <spacer name="horizontalSpacer_3">
                  <property name="orientation">
@@ -423,21 +437,6 @@ By default, it has the base background.</string>
                   </size>
                  </property>
                 </spacer>
-               </item>
-               <item row="0" column="3" colspan="2">
-                <widget class="QCheckBox" name="checkBoxIconlessBtn">
-                 <property name="toolTip">
-                  <string>No icon for push buttons that have text?
-
-By default, most push buttons have icon.
-
-If this is disabled, see:
-Miscellaneous → Respect current DE if possible</string>
-                 </property>
-                 <property name="text">
-                  <string>Iconless push buttons</string>
-                 </property>
-                </widget>
                </item>
                <item row="1" column="1">
                 <widget class="QCheckBox" name="checkBoxPcmanfmSide">
@@ -454,17 +453,17 @@ with LXQt Session Settings.</string>
                 </widget>
                </item>
                <item row="1" column="3" colspan="2">
-                <widget class="QCheckBox" name="checkBoxIconlessMenu">
+                <widget class="QCheckBox" name="checkBoxIconlessBtn">
                  <property name="toolTip">
-                  <string>No icon for menu-items?
+                  <string>No icon for push buttons that have text?
 
-By default, some of them may have icon.
+By default, most push buttons have icon.
 
 If this is disabled, see:
 Miscellaneous → Respect current DE if possible</string>
                  </property>
                  <property name="text">
-                  <string>Iconless menus</string>
+                  <string>Iconless push buttons</string>
                  </property>
                 </widget>
                </item>
@@ -483,16 +482,17 @@ with LXQt Session Settings.</string>
                 </widget>
                </item>
                <item row="2" column="3" colspan="2">
-                <widget class="QCheckBox" name="checkBoxToolbar">
+                <widget class="QCheckBox" name="checkBoxIconlessMenu">
                  <property name="toolTip">
-                  <string>Only the top toolbar should be styled?
+                  <string>No icon for menu-items?
 
-By default, all toolbars are styled,
-whether they are on the top or at any
-other position.</string>
+By default, some of them may have icon.
+
+If this is disabled, see:
+Miscellaneous → Respect current DE if possible</string>
                  </property>
                  <property name="text">
-                  <string>Single top toolbar</string>
+                  <string>Iconless menus</string>
                  </property>
                 </widget>
                </item>
@@ -511,7 +511,32 @@ Konsole, QTerminal and LXQt panel are some examples.</string>
                  </property>
                 </widget>
                </item>
-               <item row="3" column="3">
+               <item row="3" column="3" colspan="2">
+                <widget class="QCheckBox" name="checkBoxToolbar">
+                 <property name="toolTip">
+                  <string>Only the top toolbar should be styled?
+
+By default, all toolbars are styled,
+whether they are on the top or at any
+other position.</string>
+                 </property>
+                 <property name="text">
+                  <string>Single top toolbar</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QCheckBox" name="checkBoxBlurActive">
+                 <property name="toolTip">
+                  <string>By default, both active and inactive translucent windows
+will be blurred if blurring is enabled.</string>
+                 </property>
+                 <property name="text">
+                  <string>No blurring for inactive windows</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="3" colspan="2">
                 <widget class="QCheckBox" name="checkBoxVToolbar">
                  <property name="toolTip">
                   <string>By default, vertical toolbars are not styled.
@@ -523,7 +548,7 @@ If this is disabled, see the above option.</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="1">
+               <item row="5" column="1">
                 <widget class="QCheckBox" name="checkBoxKtitle">
                  <property name="toolTip">
                   <string>Do not draw any background for KTitles.</string>
@@ -536,7 +561,7 @@ If this is disabled, see the above option.</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="3" colspan="2">
+               <item row="5" column="3" colspan="2">
                 <widget class="QCheckBox" name="checkBoxTint">
                  <property name="toolTip">
                   <string>Do not tint selected label icons with
@@ -550,7 +575,7 @@ the highlight color!</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="1">
+               <item row="6" column="1">
                 <widget class="QCheckBox" name="checkBoxMenuTitle">
                  <property name="toolTip">
                   <string>Do not draw any background for (KDE) menu titles.
@@ -564,7 +589,7 @@ the highlight color!</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="3" colspan="2">
+               <item row="6" column="3" colspan="2">
                 <widget class="QCheckBox" name="checkBoxCenteredForms">
                  <property name="toolTip">
                   <string>If checked, the contents of a form will be
@@ -575,7 +600,7 @@ horizontally centered as far as possible.</string>
                  </property>
                 </widget>
                </item>
-               <item row="6" column="1">
+               <item row="7" column="1">
                 <widget class="QCheckBox" name="checkBoxDark">
                  <property name="toolTip">
                   <string>Some apps may not respect dark themes.
@@ -587,7 +612,7 @@ as far as possible.</string>
                  </property>
                 </widget>
                </item>
-               <item row="6" column="3" colspan="2">
+               <item row="7" column="3" colspan="2">
                 <widget class="QCheckBox" name="checkBoxNoninteger">
                  <property name="toolTip">
                   <string>You might see annoying artifacts that are caused
@@ -599,7 +624,7 @@ with window translucency or gradient.</string>
                  </property>
                 </widget>
                </item>
-               <item row="7" column="1">
+               <item row="8" column="1">
                 <widget class="QCheckBox" name="checkBoxGrip">
                  <property name="toolTip">
                   <string>Show size grips of dialogs and statusbars
@@ -610,17 +635,6 @@ as far as possible.</string>
                  </property>
                  <property name="text">
                   <string>Force size grips</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="1">
-                <widget class="QCheckBox" name="checkBoxScrollJump">
-                 <property name="toolTip">
-                  <string>By default, the scroll slider jumps to a position
-when the scrollbar is left clicked.</string>
-                 </property>
-                 <property name="text">
-                  <string>Scroll jump with middle click</string>
                  </property>
                 </widget>
                </item>
@@ -656,16 +670,16 @@ Hard-coded icons/styles may not respect this key.</string>
                 </widget>
                </item>
                <item row="9" column="1">
-                <widget class="QCheckBox" name="checkBoxKineticScrolling">
+                <widget class="QCheckBox" name="checkBoxScrollJump">
                  <property name="toolTip">
-                  <string>Scroll some scrollable widgets by flicking them
-with the left mouse button.
+                  <string>By default, the scroll slider jumps to a position
+when the scrollbar is left clicked.
 
-Warning: Qt's kinetic scrolling has bugs and may
-seriously interfere with other jobs.</string>
+If this is disabled, see:
+Miscellaneous → Respect current DE if possible</string>
                  </property>
                  <property name="text">
-                  <string>Kinetic scrolling</string>
+                  <string>Scroll jump with middle click</string>
                  </property>
                 </widget>
                </item>
@@ -706,14 +720,19 @@ reduced by other means.</string>
                 </widget>
                </item>
                <item row="10" column="1">
-                <widget class="QCheckBox" name="checkBoxNormalBtn">
+                <widget class="QCheckBox" name="checkBoxKineticScrolling">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="toolTip">
-                  <string>No bold font for default push buttons?
+                  <string>Scroll some scrollable widgets by flicking them
+with the left mouse button.
 
-Such push buttons have bold text by default.</string>
+Warning: Qt's kinetic scrolling has bugs and may
+seriously interfere with other jobs.</string>
                  </property>
                  <property name="text">
-                  <string>Normal font for default push buttons</string>
+                  <string>Kinetic scrolling</string>
                  </property>
                 </widget>
                </item>
@@ -780,12 +799,55 @@ Miscellaneous → Respect current DE if possible</string>
                <item row="0" column="5" rowspan="12">
                 <layout class="QVBoxLayout" name="verticalLayout_2">
                  <item>
+                  <widget class="QGroupBox" name="blurBox">
+                   <property name="toolTip">
+                    <string>If blurring is enabled, these values set the corner
+radii for blurring translucent menus and tooltips
+that have rounded corners.
+
+Usually, a value of 2 is enough.</string>
+                   </property>
+                   <property name="title">
+                    <string>Blur Corner Radius</string>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_14">
+                    <item row="0" column="1">
+                     <widget class="QSpinBox" name="spinMenuBlur">
+                      <property name="maximum">
+                       <number>10</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_11">
+                      <property name="text">
+                       <string>Menu:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_12">
+                      <property name="text">
+                       <string>Tooltip:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QSpinBox" name="spinTooltipBlur">
+                      <property name="maximum">
+                       <number>10</number>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QGroupBox" name="contrastBox">
                    <property name="toolTip">
-                    <string>This needs the KDE contrast effect with Qt ≥ 5.11
-and is applied only to translucent windows that
-support the blur effect (but the KDE blur effect
-can be disabled).
+                    <string>This needs the KDE contrast effect and is applied
+only to translucent windows that support the blur
+effect (but the KDE blur effect can be disabled).
 
 A value of 1.00 means no change.</string>
                    </property>
@@ -921,46 +983,50 @@ for windows or the window opacity is reduced (see below).</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="1">
-                <widget class="QLabel" name="opaqueLabel">
-                 <property name="toolTip">
-                  <string>A comma-separated list of executables,
+               <item row="4" column="1" colspan="3">
+                <layout class="QHBoxLayout" name="horizontalLayout">
+                 <item>
+                  <widget class="QLabel" name="opaqueLabel">
+                   <property name="toolTip">
+                    <string>A comma-separated list of executables,
 whose windows should not be translucent.
 
 (Some apps, like video players, may have
 problems with translucency!)</string>
-                 </property>
-                 <property name="text">
-                  <string>Opaque apps:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="2">
-                <spacer name="horizontalSpacerOpaque">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeType">
-                  <enum>QSizePolicy::Minimum</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>5</width>
-                   <height>5</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="4" column="3">
-                <widget class="QLineEdit" name="opaqueEdit">
-                 <property name="toolTip">
-                  <string>A comma-separated list of executables,
+                   </property>
+                   <property name="text">
+                    <string>Opaque apps:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacerOpaque">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Minimum</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>5</width>
+                     <height>5</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="opaqueEdit">
+                   <property name="toolTip">
+                    <string>A comma-separated list of executables,
 whose windows should not be translucent.
 
 (Some apps, like video players, may have
 problems with translucency!)</string>
-                 </property>
-                </widget>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
                <item row="4" column="4">
                 <spacer name="horizontalSpacer">
@@ -985,7 +1051,10 @@ problems with translucency!)</string>
 if window translucency is enabled.
 
 A translucent SVG background is NOT
-needed for this key to work.</string>
+needed for this key to work.
+
+A negative value means that only the
+opacity of inactive windows is reduced.</string>
                  </property>
                  <property name="text">
                   <string>Reduce window opacity by</string>
@@ -1015,10 +1084,16 @@ needed for this key to work.</string>
 if window translucency is enabled.
 
 A translucent SVG background is NOT
-needed for this key to work.</string>
+needed for this key to work.
+
+A negative value means that only the
+opacity of inactive windows is reduced.</string>
                  </property>
                  <property name="suffix">
                   <string> %</string>
+                 </property>
+                 <property name="minimum">
+                  <number>-90</number>
                  </property>
                  <property name="maximum">
                   <number>90</number>
@@ -1306,7 +1381,7 @@ KDE apps get it from KDE setting.</string>
                   <item row="4" column="0">
                    <widget class="QLabel" name="labelLayout">
                     <property name="toolTip">
-                     <string>The default value is 2 px but
+                     <string>The default value is 3 px but
 some apps set it themeselves.</string>
                     </property>
                     <property name="text">
@@ -1317,7 +1392,7 @@ some apps set it themeselves.</string>
                   <item row="4" column="1">
                    <widget class="QSpinBox" name="spinLayout">
                     <property name="toolTip">
-                     <string>The default value is 2 px but
+                     <string>The default value is 3 px but
 some apps set it themeselves.</string>
                     </property>
                     <property name="suffix">
@@ -1334,7 +1409,7 @@ some apps set it themeselves.</string>
                   <item row="5" column="0">
                    <widget class="QLabel" name="labelMarging">
                     <property name="toolTip">
-                     <string>The default value is 4 px but some apps set it themeselves.</string>
+                     <string>The default value is 6 px but some apps set it themeselves.</string>
                     </property>
                     <property name="text">
                      <string>Layout margin:</string>
@@ -1344,7 +1419,7 @@ some apps set it themeselves.</string>
                   <item row="5" column="1">
                    <widget class="QSpinBox" name="spinLayoutMargin">
                     <property name="toolTip">
-                     <string>The default value is 4 px but some apps set it themeselves.</string>
+                     <string>The default value is 6 px but some apps set it themeselves.</string>
                     </property>
                     <property name="suffix">
                      <string> px</string>
@@ -1721,15 +1796,12 @@ This option will hide these.</string>
                 </widget>
                </item>
                <item row="5" column="3" colspan="2">
-                <widget class="QCheckBox" name="checkBoxButtonShift">
+                <widget class="QCheckBox" name="checkBoxAlt">
                  <property name="toolTip">
-                  <string>Shift the contents of push buttons when pressed?
-
-By default, the contents are shifted by 1px
-both horizontally and vertically.</string>
+                  <string>If unchecked, shortcuts will not be underlined at all.</string>
                  </property>
                  <property name="text">
-                  <string>Shift push-button contents</string>
+                  <string>Underline shortcuts with Alt</string>
                  </property>
                 </widget>
                </item>
@@ -1740,16 +1812,6 @@ both horizontally and vertically.</string>
                  </property>
                  <property name="text">
                   <string>Left aligned tabs</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="3" colspan="2">
-                <widget class="QCheckBox" name="checkBoxAlt">
-                 <property name="toolTip">
-                  <string>If unchecked, shortcuts will not be underlined at all.</string>
-                 </property>
-                 <property name="text">
-                  <string>Underline shortcuts with Alt</string>
                  </property>
                 </widget>
                </item>
@@ -1778,7 +1840,7 @@ If disabled, see Compositing &amp; General Look → Transient scrollbars!</strin
                  </property>
                 </widget>
                </item>
-               <item row="8" column="3">
+               <item row="7" column="3">
                 <widget class="QLabel" name="label_10">
                  <property name="toolTip">
                   <string>How to activate view items?</string>
@@ -1788,7 +1850,7 @@ If disabled, see Compositing &amp; General Look → Transient scrollbars!</strin
                  </property>
                 </widget>
                </item>
-               <item row="8" column="4">
+               <item row="7" column="4">
                 <widget class="QComboBox" name="comboClick">
                  <property name="toolTip">
                   <string>How to activate view items?</string>
@@ -1824,7 +1886,7 @@ If disabled, see Compositing &amp; General Look → Transient scrollbars!</strin
                  </property>
                 </spacer>
                </item>
-               <item row="9" column="3">
+               <item row="8" column="3">
                 <widget class="QLabel" name="label_2">
                  <property name="toolTip">
                   <string>Will have effect only if style
@@ -1837,7 +1899,7 @@ Default is &quot;Follow Style&quot;.</string>
                  </property>
                 </widget>
                </item>
-               <item row="9" column="4">
+               <item row="8" column="4">
                 <widget class="QComboBox" name="comboToolButton">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -1880,14 +1942,14 @@ If disabled, see Compositing &amp; General Look → Transient scrollbars!</strin
                  </property>
                 </widget>
                </item>
-               <item row="10" column="3">
+               <item row="9" column="3">
                 <widget class="QLabel" name="label_3">
                  <property name="text">
                   <string>Dialog button layout:</string>
                  </property>
                 </widget>
                </item>
-               <item row="10" column="4">
+               <item row="9" column="4">
                 <widget class="QComboBox" name="comboDialogButton"/>
                </item>
                <item row="10" column="1">
@@ -1944,7 +2006,7 @@ Miscellaneous → Respect current DE if possible</string>
                   <string>Should big menus be scrollable and have
 scroll arrows on their top and/or bottom?
 
-By default, all of their menu-items are shown.</string>
+By default, big menus are scrollable.</string>
                  </property>
                  <property name="text">
                   <string>Scrollable menus</string>
@@ -1996,7 +2058,7 @@ the Ctrl key before pressing the button.</string>
            <bool>true</bool>
           </property>
           <property name="textInteractionFlags">
-           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           <set>Qt::LinksAccessibleByMouse</set>
           </property>
          </widget>
         </item>
@@ -2069,6 +2131,10 @@ the Ctrl key before pressing the button.</string>
         </item>
         <item row="4" column="1">
          <widget class="QLineEdit" name="appsEdit">
+          <property name="toolTip">
+           <string>Each executable name can be either a
+simple string or a regular expression.</string>
+          </property>
           <property name="placeholderText">
            <string>app1,app2,app3</string>
           </property>

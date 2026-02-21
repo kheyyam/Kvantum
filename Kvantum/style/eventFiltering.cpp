@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2020 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2025 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,7 +17,6 @@
 
 #include "Kvantum.h"
 
-#include <QLibrary> // only for setGtkVariant()
 #include <QPainter>
 #include <QTimer>
 #include <QApplication>
@@ -44,98 +43,17 @@
 namespace Kvantum
 {
 
-static void setGtkVariant(QWidget *widget, bool dark) // by Craig Drummond
-{
-  if (!widget || QLatin1String("xcb")!=qApp->platformName()) {
-    return;
-  }
-  static const char *_GTK_THEME_VARIANT="_GTK_THEME_VARIANT";
-
-  // Check if already set
-  QByteArray styleVar = dark ? "dark" : "light";
-  QVariant var=widget->property("_GTK_THEME_VARIANT");
-  if (var.isValid() && var.toByteArray()==styleVar) {
-    return;
-  }
-
-  // Typedef's from xcb/xcb.h - copied so that there is no
-  // direct xcb dependency
-  typedef quint32 XcbAtom;
-
-  struct XcbInternAtomCookie {
-    unsigned int sequence;
-  };
-
-  struct XcbInternAtomReply {
-    quint8  response_type;
-    quint8  pad0;
-    quint16 sequence;
-    quint32 length;
-    XcbAtom atom;
-  };
-
-  typedef void * (*XcbConnectFn)(int, int);
-  typedef XcbInternAtomCookie (*XcbInternAtomFn)(void *, int, int, const char *);
-  typedef XcbInternAtomReply * (*XcbInternAtomReplyFn)(void *, XcbInternAtomCookie, int);
-  typedef int (*XcbChangePropertyFn)(void *, int, int, XcbAtom, XcbAtom, int, int, const void *);
-  typedef int (*XcbFlushFn)(void *);
-
-  static QLibrary *lib = 0;
-  static XcbAtom variantAtom = 0;
-  static XcbAtom utf8TypeAtom = 0;
-  static void *xcbConn = 0;
-  static XcbChangePropertyFn XcbChangePropertyFnPtr = 0;
-  static XcbFlushFn XcbFlushFnPtr = 0;
-
-  if (!lib) {
-    lib = new QLibrary("libxcb", qApp);
-
-    if (lib->load()) {
-      XcbConnectFn XcbConnectFnPtr=(XcbConnectFn)lib->resolve("xcb_connect");
-      XcbInternAtomFn XcbInternAtomFnPtr=(XcbInternAtomFn)lib->resolve("xcb_intern_atom");
-      XcbInternAtomReplyFn XcbInternAtomReplyFnPtr=(XcbInternAtomReplyFn)lib->resolve("xcb_intern_atom_reply");
-
-      XcbChangePropertyFnPtr=(XcbChangePropertyFn)lib->resolve("xcb_change_property");
-      XcbFlushFnPtr=(XcbFlushFn)lib->resolve("xcb_flush");
-      if (XcbConnectFnPtr && XcbInternAtomFnPtr && XcbInternAtomReplyFnPtr && XcbChangePropertyFnPtr && XcbFlushFnPtr) {
-        xcbConn=(*XcbConnectFnPtr)(0, 0);
-        if (xcbConn) {
-          XcbInternAtomReply *typeReply = (*XcbInternAtomReplyFnPtr)(xcbConn, (*XcbInternAtomFnPtr)(xcbConn, 0, 11, "UTF8_STRING"), 0);
-
-          if (typeReply) {
-            XcbInternAtomReply *gtkVarReply = (*XcbInternAtomReplyFnPtr)(xcbConn, (*XcbInternAtomFnPtr)(xcbConn, 0, strlen(_GTK_THEME_VARIANT),
-                                                                                                        _GTK_THEME_VARIANT), 0);
-            if (gtkVarReply) {
-               utf8TypeAtom = typeReply->atom;
-               variantAtom = gtkVarReply->atom;
-               free(gtkVarReply);
-            }
-            free(typeReply);
-          }
-        }
-      }
-    }
-  }
-
-  if (0!=variantAtom) {
-    (*XcbChangePropertyFnPtr)(xcbConn, 0, widget->effectiveWinId(), variantAtom, utf8TypeAtom, 8,
-                              styleVar.length(), (const void *)styleVar.constData());
-    (*XcbFlushFnPtr)(xcbConn);
-    widget->setProperty(_GTK_THEME_VARIANT, styleVar);
-  }
-}
-
 void Style::drawBg(QPainter *p, const QWidget *widget) const
 {
   if (widget->palette().color(widget->backgroundRole()) == Qt::transparent)
     return; // Plasma FIXME: needed?
   QRect bgndRect(widget->rect());
-  interior_spec ispec = getInteriorSpec(QStringLiteral("DialogTranslucent"));
-  size_spec sspec = getSizeSpec(QStringLiteral("DialogTranslucent"));
+  interior_spec ispec = getInteriorSpec(KSL("DialogTranslucent"));
+  size_spec sspec = getSizeSpec(KSL("DialogTranslucent"));
   if (ispec.element.isEmpty())
   {
-    ispec = getInteriorSpec(QStringLiteral("Dialog"));
-    sspec = getSizeSpec(QStringLiteral("Dialog"));
+    ispec = getInteriorSpec(KSL("Dialog"));
+    sspec = getSizeSpec(KSL("Dialog"));
   }
   if (!ispec.element.isEmpty()
       && !widget->windowFlags().testFlag(Qt::FramelessWindowHint)) // not a panel
@@ -144,48 +62,64 @@ void Style::drawBg(QPainter *p, const QWidget *widget) const
     { // even dialogs may have menubar or toolbar (as in Qt Designer)
       if (qobject_cast<QMenuBar*>(child) || qobject_cast<QToolBar*>(child))
       {
-        ispec = getInteriorSpec(QStringLiteral("WindowTranslucent"));
-        sspec = getSizeSpec(QStringLiteral("WindowTranslucent"));
+        ispec = getInteriorSpec(KSL("WindowTranslucent"));
+        sspec = getSizeSpec(KSL("WindowTranslucent"));
         if (ispec.element.isEmpty())
         {
-          ispec = getInteriorSpec(QStringLiteral("Window"));
-          sspec = getSizeSpec(QStringLiteral("Window"));
+          ispec = getInteriorSpec(KSL("Window"));
+          sspec = getSizeSpec(KSL("Window"));
         }
       }
     }
   }
   else
   {
-    ispec = getInteriorSpec(QStringLiteral("WindowTranslucent"));
-    sspec = getSizeSpec(QStringLiteral("WindowTranslucent"));
+    ispec = getInteriorSpec(KSL("WindowTranslucent"));
+    sspec = getSizeSpec(KSL("WindowTranslucent"));
     if (ispec.element.isEmpty())
     {
-      ispec = getInteriorSpec(QStringLiteral("Window"));
-      sspec = getSizeSpec(QStringLiteral("Window"));
+      ispec = getInteriorSpec(KSL("Window"));
+      sspec = getSizeSpec(KSL("Window"));
     }
   }
   frame_spec fspec;
   default_frame_spec(fspec);
 
-  QString suffix = "-normal";
-  if (isWidgetInactive(widget))
-    suffix = "-normal-inactive";
+  bool isInactive(isWidgetInactive(widget));
+  QString suffix(isInactive ? "-normal-inactive" : "-normal");
 
   if (tspec_.no_window_pattern && (ispec.px > 0 || ispec.py > 0))
     ispec.px = -2; // no tiling pattern with translucency
 
   p->setClipRegion(bgndRect, Qt::IntersectClip);
   int ro = tspec_.reduce_window_opacity;
+  if (ro < 0)
+  {
+    if (isInactive) ro = -ro;
+    else ro = 0;
+  }
   if (ro > 0)
   {
     p->save();
-    p->setOpacity(1.0 - static_cast<qreal>(tspec_.reduce_window_opacity)/100.0);
+    p->setOpacity(1.0 - static_cast<qreal>(ro)/100.0);
   }
   int dh = sspec.incrementH ? sspec.minH : qMax(sspec.minH - bgndRect.height(), 0);
   int dw = sspec.incrementW ? sspec.minW : qMax(sspec.minW - bgndRect.width(), 0);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6,8,0))
+  /* NOTE: This is a workaround for artifacts under Wayland. */
+  if (!tspec_.isX11)
+  {
+    auto origMode = p->compositionMode();
+    p->setCompositionMode(QPainter::CompositionMode_Clear);
+    p->fillRect(bgndRect, Qt::transparent);
+    p->setCompositionMode(origMode);
+  }
+#endif
+
   if (!renderInterior(p,bgndRect.adjusted(0,0,dw,dh),fspec,ispec,ispec.element+suffix))
   { // no window interior element but with reduced translucency
-    p->fillRect(bgndRect, standardPalette().color(suffix.contains("-inactive")
+    p->fillRect(bgndRect, standardPalette().color(isInactive
                                                     ? QPalette::Inactive
                                                     : QPalette::Active,
                                                   QPalette::Window));
@@ -194,7 +128,21 @@ void Style::drawBg(QPainter *p, const QWidget *widget) const
     p->restore();
 }
 
-static QSet<const QWidget*> movedMenus;
+static inline bool isAnimatedScrollArea(QWidget *w)
+{
+  auto sa = qobject_cast<QAbstractScrollArea*>(w);
+  return (sa != nullptr
+          // -> polish(QWidget *widget)
+          && (sa->frameStyle() & QFrame::StyledPanel)
+          && (sa->backgroundRole() == QPalette::Window
+              || sa->backgroundRole() == QPalette::Button)
+          && sa->viewport() != nullptr
+          && sa->viewport()->autoFillBackground()
+          && sa->viewport()->backgroundRole() != QPalette::Window
+          && sa->viewport()->backgroundRole() != QPalette::Button
+          // exclude combo popups
+          && !w->inherits("QComboBoxListView"));
+}
 
 bool Style::eventFilter(QObject *o, QEvent *e)
 {
@@ -206,30 +154,13 @@ bool Style::eventFilter(QObject *o, QEvent *e)
     {
       if (w->inherits("KisAbstractSliderSpinBox") || w->inherits("Digikam::DAbstractSliderSpinBox"))
         isKisSlider_ = true;
-      else if (QProgressBar *pb = qobject_cast<QProgressBar*>(o))
-      {
-        if (pb->maximum() == 0 && pb->minimum() == 0)
-        { // add the busy progress bar to the list
-          if (!progressbars_.contains(w))
-          {
-            progressbars_.insert(w, 0);
-            if (!progressTimer_->isActive())
-              progressTimer_->start(50);
-          }
-        }
-        else if (!progressbars_.isEmpty())
-        {
-          progressbars_.remove(w);
-          if (progressbars_.size() == 0)
-            progressTimer_->stop();
-        }
+      else if (qobject_cast<QProgressBar*>(o))
         isKisSlider_ = false;
-      }
       else if (w->isWindow()
                && w->testAttribute(Qt::WA_StyledBackground)
                && w->testAttribute(Qt::WA_TranslucentBackground)
-               && !isPlasma_ && !isOpaque_ && !subApp_ && !isLibreoffice_
-               /*&& tspec_.translucent_windows*/ // this could have weird effects with style or settings change
+               && !isPlasma_ && !isOpaque_ && !subApp_ /*&& !isLibreoffice_
+               && tspec_.translucent_windows*/ // this could have weird effects with style or settings change
               )
       {
         int t = (w->windowFlags() & Qt::WindowType_Mask);
@@ -350,10 +281,7 @@ bool Style::eventFilter(QObject *o, QEvent *e)
             col = getFromRGBA(lspec.normalColor);
         }
         if (col.isValid())
-        {
-          opacifyColor(col);
           pPalette.setColor(QPalette::ButtonText, col);
-        }
 
         /* icon */
         if (!cbtn->icon().isNull())
@@ -391,7 +319,7 @@ bool Style::eventFilter(QObject *o, QEvent *e)
           QFontMetrics fm(titleFont);
           titleRect.setTop(titleRect.top()
                            + qMax(0, (cbtn->icon().actualSize(cbtn->iconSize()).height()
-                           - fm.height()) / 2));
+                                      - fm.height()) / 2));
         }
         p.drawItemText(titleRect.translated(hOffset, vOffset),
                        textflags, pPalette, cbtn->isEnabled(), cbtn->text(), QPalette::ButtonText);
@@ -410,6 +338,99 @@ bool Style::eventFilter(QObject *o, QEvent *e)
         p.restore();
         return true; // don't let QCommandLinkButton::paintEvent() be called
       }
+#if (QT_VERSION >= QT_VERSION_CHECK(6,8,2))
+      /* NOTE: Since Qt 6.8.2, if an applied (app) stylesheet has nothing to do with some widgets,
+               it might ruin their drawing by interfering with the widget style (I reported it to
+               the Qt bug tracker, but to no avail, as usual). As a workaround for this nasty
+               regression, Kvantum's methods are forced here by using ordinary painters. */
+      else if (QComboBox *combo = qobject_cast<QComboBox*>(o))
+      { // -> QComboBox::initStyleOption
+        if (!combo->style()->inherits("QStyleSheetStyle")
+            || combo->testAttribute(Qt::WA_StyleSheetTarget)
+            || combo->isEditable())
+        {
+          break;
+        }
+        QPainter p(combo);
+        p.save();
+        QStyleOptionComboBox option;
+        option.initFrom(combo);
+        if (combo->hasFocus())
+          option.state |= State_Selected;
+        if (combo->view() && combo->view()->isVisible())
+          option.state |= State_On;
+        option.editable = false;
+        option.currentText = combo->currentText();
+        option.iconSize = combo->iconSize();
+        int curIndex = combo->currentIndex();
+        if (curIndex > -1)
+          option.currentIcon = combo->itemIcon(curIndex);
+        drawComplexControl(QStyle::CC_ComboBox, &option, &p, combo);
+        if (curIndex < 0 && !combo->placeholderText().isEmpty())
+        {
+            option.palette.setBrush(QPalette::ButtonText, option.palette.placeholderText());
+            option.currentText = combo->placeholderText();
+        }
+        drawControl(QStyle::CE_ComboBoxLabel, &option, &p, combo);
+        p.restore();
+        p.end();
+        return true;
+      }
+      else if (QToolButton *tb = qobject_cast<QToolButton*>(o))
+      { // Like the case of combobox, above, but more complex (-> QToolButton::initStyleOption).
+        if (!tb->style()->inherits("QStyleSheetStyle")
+            || tb->testAttribute(Qt::WA_StyleSheetTarget)
+            || tb->arrowType() == Qt::NoArrow)
+        {
+          break;
+        }
+        QPainter p(tb);
+        p.save();
+        QStyleOptionToolButton option;
+        option.initFrom(tb);
+        if (tb->isChecked())
+          option.state |= State_On;
+        if (tb->autoRaise())
+          option.state |= State_AutoRaise;
+        if (tb->isDown())
+          option.state |= State_Sunken; // sadly, this doesn't cover the menu arrow, if any
+        else if (!tb->isChecked())
+          option.state |= State_Raised; // not used by Kvantum
+        option.features = QStyleOptionToolButton::Arrow;
+        if (tb->popupMode() == QToolButton::MenuButtonPopup)
+          option.features |= QStyleOptionToolButton::MenuButtonPopup;
+        if (tb->popupMode() == QToolButton::DelayedPopup)
+          option.features |= QStyleOptionToolButton::PopupDelay;
+        if (tb->menu())
+          option.features |= QStyleOptionToolButton::HasMenu;
+        if (tb->toolButtonStyle() == Qt::ToolButtonFollowStyle)
+          option.toolButtonStyle = Qt::ToolButtonStyle(styleHint(QStyle::SH_ToolButtonStyle, &option, tb));
+        else
+          option.toolButtonStyle = tb->toolButtonStyle();
+        if (option.toolButtonStyle == Qt::ToolButtonTextBesideIcon)
+        {
+          if (tb->defaultAction() && tb->defaultAction()->priority() < QAction::NormalPriority)
+            option.toolButtonStyle = Qt::ToolButtonIconOnly;
+        }
+        /*if (tb->icon().isNull() && tb->arrowType() == Qt::NoArrow)
+        {
+          if (!tb->text().isEmpty())
+            option.toolButtonStyle = Qt::ToolButtonTextOnly;
+          else if (option.toolButtonStyle != Qt::ToolButtonTextOnly)
+            option.toolButtonStyle = Qt::ToolButtonIconOnly;
+        }*/
+        option.text = tb->text();
+        option.iconSize = tb->iconSize();
+        option.icon = tb->icon();
+        option.pos = tb->pos();
+        option.font = tb->font();
+        option.arrowType = tb->arrowType();
+        drawComplexControl(QStyle::CC_ToolButton, &option, &p, tb);
+        p.restore();
+        p.end();
+        return true;
+      }
+#endif
     }
     break;
 
@@ -417,7 +438,7 @@ bool Style::eventFilter(QObject *o, QEvent *e)
     if (QTabBar *tabbar = qobject_cast<QTabBar*>(o))
     { // see QEvent::HoverEnter below
       QHoverEvent *he = static_cast<QHoverEvent*>(e);
-      int indx = tabbar->tabAt(he->pos());
+      int indx = tabbar->tabAt(he->position().toPoint());
       if (indx > -1)
       {
         int diff = qAbs(indx - tabbar->currentIndex());
@@ -426,7 +447,7 @@ bool Style::eventFilter(QObject *o, QEvent *e)
         {
           /* the cursor has moved to a tab adjacent to the active tab */
           QRect r = tabbar->tabRect(indx);
-          const frame_spec fspec = getFrameSpec(QStringLiteral("Tab"));
+          const frame_spec fspec = getFrameSpec(KSL("Tab"));
           int overlap = tspec_.active_tab_overlap;
           int exp = qMin(fspec.expansion, qMin(r.width(), r.height())) / 2 + 1;
           overlap = qMin(overlap, qMax(exp, qMax(fspec.left, fspec.right)));
@@ -469,11 +490,11 @@ bool Style::eventFilter(QObject *o, QEvent *e)
          results in an ugly hover effect with overlapping. So, we update
          the extended tab rect when there's an overlapping. */
       QHoverEvent *he = static_cast<QHoverEvent*>(e);
-      int indx = tabbar->tabAt(he->pos());
+      int indx = tabbar->tabAt(he->position().toPoint());
       if (indx > -1 && qAbs(indx - tabbar->currentIndex()) == 1)
       {
         QRect r = tabbar->tabRect(indx);
-        const frame_spec fspec = getFrameSpec(QStringLiteral("Tab"));
+        const frame_spec fspec = getFrameSpec(KSL("Tab"));
         int overlap = tspec_.active_tab_overlap;
         int exp = qMin(fspec.expansion, qMin(r.width(), r.height())) / 2 + 1;
         overlap = qMin(overlap, qMax(exp, qMax(fspec.left, fspec.right)));
@@ -521,8 +542,8 @@ bool Style::eventFilter(QObject *o, QEvent *e)
       {
         if (!w->hasFocus())
           animationStartState_ = "normal";
-        /* the popup may have been closed (with Qt5) */
-        else if (!(animatedWidget_ == w && animationStartState_.startsWith("c-toggled")))
+        /* the popup may have been closed (with Qt>=5) */
+        else if (!(animatedWidget_ == w && animationStartState_.startsWith(KL1("c-toggled"))))
           animationStartState_ = "pressed";
         if (isWidgetInactive(w))
           animationStartState_.append("-inactive");
@@ -556,8 +577,8 @@ bool Style::eventFilter(QObject *o, QEvent *e)
           animatedWidget_->update();
         }
         if (!(animatedWidget_ == w
-              && (animationStartState_.startsWith("c-toggled")
-                  || animationStartState_.startsWith("normal"))))
+              && (animationStartState_.startsWith(KL1("c-toggled"))
+                  || animationStartState_.startsWith(KL1("normal")))))
         { // it was hidden or another widget was interacted with  -- there's no other possibility
           animationStartState_ = "normal";
           if (isWidgetInactive(w))
@@ -569,12 +590,11 @@ bool Style::eventFilter(QObject *o, QEvent *e)
       }
       else
       {
-        QAbstractScrollArea *sa = qobject_cast<QAbstractScrollArea*>(o);
-        if ((sa && !w->inherits("QComboBoxListView") // exclude combo popups
-             /* no animation without the top focused generic frame */
-             && elementExists(getFrameSpec(QStringLiteral("GenericFrame")).element+"-focused-top"))
+        if ((isAnimatedScrollArea(w)
+             // no animation without the top focused generic frame
+             && elementExists(getFrameSpec(KSL("GenericFrame")).element+"-focused-top"))
             || (qobject_cast<QLineEdit*>(o)
-                // this is only needed for Qt5 -- Qt4 combo lineedits don't have FocusIn event
+                // this is needed for Qt>=5 -- Qt4 combo lineedits did not have FocusIn event
                 && !qobject_cast<QComboBox*>(w->parentWidget()))
             || qobject_cast<QAbstractSpinBox*>(o)
             || ((tspec_.combo_as_lineedit || tspec_.square_combo_button)
@@ -598,7 +618,7 @@ bool Style::eventFilter(QObject *o, QEvent *e)
           }
           if (animatedWidget_ && animatedWidget_ != w)
           {
-            if (sa)
+            if (auto sa = qobject_cast<QAbstractScrollArea*>(w))
             { // no animation when a scrollbar is going to be animated
               if ((animatedWidget_ == sa->verticalScrollBar() || animatedWidget_ == sa->horizontalScrollBar())
                   && animatedWidget_->rect().contains(animatedWidget_->mapFromGlobal(QCursor::pos())))
@@ -628,13 +648,12 @@ bool Style::eventFilter(QObject *o, QEvent *e)
       QWidget *popup = QApplication::activePopupWidget();
       if (popup && !popup->isAncestorOf(w))
         break; // not due to a popup widget
-      if (qobject_cast<QComboBox*>(o)
+      if ((isAnimatedScrollArea(w)
+           // no animation without the top focused generic frame
+           && elementExists(getFrameSpec(KSL("GenericFrame")).element+"-focused-top"))
+          || qobject_cast<QComboBox*>(o)
           || qobject_cast<QLineEdit*>(o)
-          || qobject_cast<QAbstractSpinBox*>(o)
-          || (qobject_cast<QAbstractScrollArea*>(o)
-              && !w->inherits("QComboBoxListView") // exclude combo popups
-              /* no animation without the top focused generic frame */
-              && elementExists(getFrameSpec(QStringLiteral("GenericFrame")).element+"-focused-top")))
+          || qobject_cast<QAbstractSpinBox*>(o))
       {
         /* disable animation if focus-out happens immediately after focus-in
            for exactly the same area to prevent flashing */
@@ -819,16 +838,10 @@ bool Style::eventFilter(QObject *o, QEvent *e)
         }
       }
     }
-    else if (gtkDesktop_
-             && (!w->parent() || !qobject_cast<QWidget*>(w->parent())
-                 || qobject_cast<QDialog*>(w) || qobject_cast<QMainWindow*>(w)))
-    {
-      setGtkVariant(w, tspec_.dark_titlebar);
-    }
     break;
 
   case QEvent::WindowActivate:
-    if (qobject_cast<QAbstractItemView*>(o))
+    if (!tspec_.no_inactiveness && qobject_cast<QAbstractItemView*>(o))
     {
       QPalette palette = w->palette();
       if (palette.color(QPalette::Active, QPalette::Text)
@@ -836,39 +849,51 @@ bool Style::eventFilter(QObject *o, QEvent *e)
       { // Custom text color; don't set palettes! The app is responsible for all colors.
         break;
       }
-      const label_spec lspec = getLabelSpec(QStringLiteral("ItemView"));
+      bool _forcePalette(false);
+      const label_spec lspec = getLabelSpec(KSL("ItemView"));
       /* set the normal inactive text color to the normal active one
          (needed when the app sets it inactive) */
       QColor col = getFromRGBA(lspec.normalColor);
       if (!col.isValid())
         col = standardPalette().color(QPalette::Active,QPalette::Text);
-      else
-        opacifyColor(col);
-      palette.setColor(QPalette::Inactive, QPalette::Text, col);
+      if (palette.color(QPalette::Inactive, QPalette::Text) != col)
+      {
+        _forcePalette = true;
+        palette.setColor(QPalette::Inactive, QPalette::Text, col);
+      }
       if (!hasInactiveSelItemCol_)
       {
-        forcePalette(w, palette);
+        if (_forcePalette)
+          forcePalette(w, palette);
         break;
       }
       /* set the toggled inactive text color to the toggled active one
          (the main purpose of installing an event filter on the view) */
       col = getFromRGBA(lspec.toggleColor);
-      opacifyColor(col);
-      palette.setColor(QPalette::Inactive, QPalette::HighlightedText, col);
+      if (palette.color(QPalette::Inactive, QPalette::HighlightedText) != col)
+      {
+        _forcePalette = true;
+        palette.setColor(QPalette::Inactive, QPalette::HighlightedText, col);
+      }
       /* use the active highlight color for the toggled (unfocused) item if there's
          no contrast with the pressed state because some apps (like Qt Designer)
          may not call PE_PanelItemViewItem but highlight the item instead */
       if (!toggledItemHasContrast_)
       {
-        palette.setColor(QPalette::Inactive, QPalette::Highlight,
-                         standardPalette().color(QPalette::Active,QPalette::Highlight));
+        col = standardPalette().color(QPalette::Active,QPalette::Highlight);
+        if (palette.color(QPalette::Inactive, QPalette::Highlight) != col)
+        {
+          _forcePalette = true;
+          palette.setColor(QPalette::Inactive, QPalette::Highlight, col);
+        }
       }
-      forcePalette(w, palette);
+      if (_forcePalette)
+        forcePalette(w, palette);
     }
     break;
 
   case QEvent::WindowDeactivate:
-    if (qobject_cast<QAbstractItemView*>(o))
+    if (!tspec_.no_inactiveness && qobject_cast<QAbstractItemView*>(o))
     {
       QPalette palette = w->palette();
       if (palette.color(QPalette::Active, QPalette::Text)
@@ -876,30 +901,42 @@ bool Style::eventFilter(QObject *o, QEvent *e)
       {
         break;
       }
-      const label_spec lspec = getLabelSpec(QStringLiteral("ItemView"));
+      bool _forcePalette(false);
+      const label_spec lspec = getLabelSpec(KSL("ItemView"));
       /* restore the normal inactive text color (which was changed at QEvent::WindowActivate) */
       QColor col = getFromRGBA(lspec.normalInactiveColor);
       if (!col.isValid())
         col = standardPalette().color(QPalette::Inactive,QPalette::Text);
-      else
-        opacifyColor(col);
-      palette.setColor(QPalette::Inactive, QPalette::Text, col);
+      if (palette.color(QPalette::Inactive, QPalette::Text) != col)
+      {
+        _forcePalette = true;
+        palette.setColor(QPalette::Inactive, QPalette::Text, col);
+      }
       if (!hasInactiveSelItemCol_)
       { // custom text color
-        forcePalette(w, palette);
+        if (_forcePalette)
+          forcePalette(w, palette);
         break;
       }
       /* restore the toggled inactive text color (which was changed at QEvent::WindowActivate) */
       col = getFromRGBA(lspec.toggleInactiveColor);
-      opacifyColor(col);
-      palette.setColor(QPalette::Inactive,QPalette::HighlightedText, col);
+      if (palette.color(QPalette::Inactive,QPalette::HighlightedText) != col)
+      {
+        _forcePalette = true;
+        palette.setColor(QPalette::Inactive,QPalette::HighlightedText, col);
+      }
       /* restore the inactive highlight color (which was changed at QEvent::WindowActivate) */
       if (!toggledItemHasContrast_)
       {
-        palette.setColor(QPalette::Inactive, QPalette::Highlight,
-                         standardPalette().color(QPalette::Inactive,QPalette::Highlight));
+        col = standardPalette().color(QPalette::Inactive,QPalette::Highlight);
+        if (palette.color(QPalette::Inactive, QPalette::Highlight) != col)
+        {
+          _forcePalette = true;
+          palette.setColor(QPalette::Inactive, QPalette::Highlight, col);
+        }
       }
-      forcePalette(w, palette);
+      if (_forcePalette)
+        forcePalette(w, palette);
     }
     break;
 
@@ -910,24 +947,37 @@ bool Style::eventFilter(QObject *o, QEvent *e)
                               || w->windowType() == Qt::ToolTip))
       {
         popupOrigins_.insert(w, animatedWidget_);
+        connect(w, &QObject::destroyed, this, &Style::forgetPopupOrigin);
       }
 
-      if (QProgressBar *pb = qobject_cast<QProgressBar*>(o))
-      {
-        if (pb->maximum() == 0 && pb->minimum() == 0)
-        {
-          if (!progressbars_.contains(w))
-            progressbars_.insert(w, 0);
-          if (!progressTimer_->isActive())
-            progressTimer_->start(50);
-        }
-      }
-      else if (QMenu *menu = qobject_cast<QMenu*>(o))
+      if (QMenu *menu = qobject_cast<QMenu*>(o))
       {
         //if (isLibreoffice_) break;
         if (w->testAttribute(Qt::WA_X11NetWmWindowTypeMenu)) break; // detached menu
         if (w->testAttribute(Qt::WA_StyleSheetTarget)) break; // not drawn by Kvantum (see PM_MenuHMargin)
-        if (movedMenus.contains(w)) break; // already moved
+
+        /*
+          This is a workaround for a fixed Qt5 bug (QTBUG-47043) that has reappeared
+          in Qt6 in another form but with almost the same result: _NET_WM_WINDOW_TYPE
+          is set to _NET_WM_WINDOW_TYPE_NORMAL for ordinary menus and combo popup menus.
+          "QXcbWindowFunctions::setWmWindowType()" doesn't exist in Qt6 but the window
+          type can be set by removing and resetting menu/combo attributes.
+        */
+        /*if (tspec_.isX11 && !e->spontaneous() && w->windowHandle() != nullptr)
+        {
+          if (w->testAttribute(Qt::WA_X11NetWmWindowTypeDropDownMenu))
+          {
+            w->setAttribute(Qt::WA_X11NetWmWindowTypeDropDownMenu, false);
+            w->setAttribute(Qt::WA_X11NetWmWindowTypeDropDownMenu, true);
+          }
+          else if (w->testAttribute(Qt::WA_X11NetWmWindowTypePopupMenu))
+          {
+            w->setAttribute(Qt::WA_X11NetWmWindowTypePopupMenu, false);
+            w->setAttribute(Qt::WA_X11NetWmWindowTypePopupMenu, true);
+          }
+        }*/
+
+        if (movedMenus_.contains(w)) break; // already moved
         /* "magical" condition for a submenu */
         QPoint parentMenuCorner;
         QMenu *parentMenu = qobject_cast<QMenu*>(QApplication::activePopupWidget());
@@ -965,21 +1015,22 @@ bool Style::eventFilter(QObject *o, QEvent *e)
         }
         /* get the available geometry (Qt menus don't
            spread across the available virtual geometry) */
-        QRect sg, ag;
+        QRect ag;
+        //QRect sg;
         QScreen *sc = nullptr;
         if (QWindow *win = w->windowHandle())
         {
           sc = win->screen();
           if (sc)
           {
-            sg = sc->geometry();
+            //sg = sc->geometry();
             ag = sc->availableGeometry();
           }
         }
         qreal dX = 0, dY = 0;
         /* this gives the real position AFTER pending movements
            because it's QWidgetData::crect (Qt -> qwidget.h) */
-        QRect g(w->geometry());
+        const QRect g(w->geometry());
 
         /* WARNING: If compositing is stopped here, we aren't responsible.
                     A check for the state of compositing at this very moment
@@ -991,6 +1042,8 @@ bool Style::eventFilter(QObject *o, QEvent *e)
 
           dY -= menuShadow_.at(1); // top shadow
 
+          QPushButton *pBtn = nullptr;
+          QToolButton *tBtn = nullptr;
           if (w->layoutDirection() == Qt::RightToLeft)
           { // see explanations for ltr below
             dX += menuShadow_.at(2);
@@ -1004,61 +1057,79 @@ bool Style::eventFilter(QObject *o, QEvent *e)
                       - static_cast<qreal>(getMenuMargin(true)); // workaround for an old Qt bug
               }
             }
-            else
+            else if (parentMenubar)
             {
-              if (parentMenubar)
-              {
-                QString group = tspec_.merge_menubar_with_toolbar ? "Toolbar" : "MenuBar";
-                if (parentMenubar->mapToGlobal(QPoint(0,0)).y() > g.bottom())
-                  dY +=  menuShadow_.at(1) + menuShadow_.at(3) + static_cast<qreal>(getFrameSpec(group).top);
-                else
-                  dY -= static_cast<qreal>(getFrameSpec(group).bottom);
+              QString group = tspec_.merge_menubar_with_toolbar ? "Toolbar" : "MenuBar";
+              if (parentMenubar->mapToGlobal(QPoint(0,0)).y() > g.bottom())
+                dY +=  menuShadow_.at(1) + menuShadow_.at(3) + static_cast<qreal>(getFrameSpec(group).top);
+              else
+                dY -= static_cast<qreal>(getFrameSpec(group).bottom);
 
-                QRect activeG = parentMenubar->actionGeometry(parentMenubar->activeAction());
-                QPoint activeTopLeft = parentMenubar->mapToGlobal(activeG.topLeft());
-                if (g.right() + 1 > activeTopLeft.x() + activeG.width())
-                { // Qt positions the menu wrongly in this case but we don't add a workaround
-                  dX -= menuShadow_.at(2);
-                  qreal delta = menuShadow_.at(2)
-                                - static_cast<qreal>(g.right() + 1 - (activeTopLeft.x() + activeG.width()));
-                  if (delta > 0)
-                    dX += delta;
-                  else
-                    dX -= qMin(menuShadow_.at(0), -delta);
+              QRect activeG = parentMenubar->actionGeometry(parentMenubar->activeAction());
+              QPoint activeTopLeft = parentMenubar->mapToGlobal(activeG.topLeft());
+              if (g.right() + 1 > activeTopLeft.x() + activeG.width())
+              { // Qt positions the menu wrongly in this case but we don't add a workaround
+                dX -= menuShadow_.at(2);
+                qreal delta = menuShadow_.at(2)
+                              - static_cast<qreal>(g.right() + 1 - (activeTopLeft.x() + activeG.width()));
+                if (delta > 0)
+                  dX += delta;
+                else
+                  dX -= qMin(menuShadow_.at(0), -delta);
+              }
+            }
+            else if (!sunkenButton_.isNull()
+                     && (!(pBtn = qobject_cast<QPushButton*>(sunkenButton_.data()))
+                         || pBtn->menu() == w)
+                     && (!(tBtn = qobject_cast<QToolButton*>(sunkenButton_.data()))
+                         || tBtn->menu() == w
+                         || (tBtn->defaultAction() && tBtn->defaultAction()->menu() == w)))
+            {
+              QPoint wTopLeft = sunkenButton_.data()->mapToGlobal(QPoint(0,0));
+              if (wTopLeft.y() >= g.bottom())
+                dY +=  menuShadow_.at(1) + menuShadow_.at(3);
+              if (g.right() + 1 > wTopLeft.x() + sunkenButton_.data()->width())
+              {
+                dX -= menuShadow_.at(2);
+                qreal delta = menuShadow_.at(2)
+                              - static_cast<qreal>(g.right() + 1 - (wTopLeft.x() + sunkenButton_.data()->width()));
+                if (delta > 0)
+                  dX += delta;
+                else
+                  dX -= qMin(menuShadow_.at(0), -delta);
+              }
+            }
+            else if (!ag.isEmpty())
+            {
+              if (tspec_.isX11)
+              {
+                if (g.top() != ag.top()
+                    && (g.bottom() == ag.bottom()
+                        || QCursor::pos(sc).y() > g.bottom()))
+                {
+                  dY += menuShadow_.at(1) + menuShadow_.at(3);
+                }
+                if (g.right() != ag.right()
+                    && (g.left() == ag.left()
+                        || QCursor::pos(sc).x() <= g.left()))
+                {
+                  dX -= menuShadow_.at(2) + menuShadow_.at(0);
                 }
               }
               else
               {
-                if (!sunkenButton_.isNull())
+                QRect pg;
+                if (QWidget *p = w->parentWidget())
+                  pg = p->window()->geometry();
+                if ((!pg.isNull() && g.bottom() + 1 == pg.top())
+                    || QCursor::pos(sc).y() > g.bottom())
                 {
-                  QPoint wTopLeft = sunkenButton_.data()->mapToGlobal(QPoint(0,0));
-                  if (wTopLeft.y() >= g.bottom())
-                    dY +=  menuShadow_.at(1) + menuShadow_.at(3);
-                  if (g.right() + 1 > wTopLeft.x() + sunkenButton_.data()->width())
-                  {
-                    dX -= menuShadow_.at(2);
-                    qreal delta = menuShadow_.at(2)
-                                  - static_cast<qreal>(g.right() + 1 - (wTopLeft.x() + sunkenButton_.data()->width()));
-                    if (delta > 0)
-                      dX += delta;
-                    else
-                      dX -= qMin(menuShadow_.at(0), -delta);
-                  }
+                  dY += menuShadow_.at(1) + menuShadow_.at(3);
                 }
-                else if (!ag.isEmpty())
+                if ((!pg.isNull() && g.left() == pg.right() + 1)
+                    || QCursor::pos(sc).x() <= g.left())
                 {
-                  if (g.top() != ag.top()
-                      && (g.bottom() == ag.bottom()
-                          || QCursor::pos(sc).y() >= g.bottom()))
-                  {
-                    dY += menuShadow_.at(1) + menuShadow_.at(3);
-                  }
-                  if (g.right() != ag.right()
-                      && (g.left() == ag.left()
-                          || QCursor::pos(sc).x() <= g.left()))
-                  {
-                    dX -= menuShadow_.at(2) + menuShadow_.at(0);
-                  }
+                  dX -= menuShadow_.at(2) + menuShadow_.at(0);
                 }
               }
             }
@@ -1075,69 +1146,89 @@ bool Style::eventFilter(QObject *o, QEvent *e)
               else
                 dX -= menuShadow_.at(2); // right shadow of the left menu
             }
-            else
+            else if (parentMenubar)
             {
-              if (parentMenubar)
-              {
-                QString group = tspec_.merge_menubar_with_toolbar ? "Toolbar" : "MenuBar";
-                if (parentMenubar->mapToGlobal(QPoint(0,0)).y() > g.bottom()) // menu is above menubar
-                  dY +=  menuShadow_.at(1) + menuShadow_.at(3) + static_cast<qreal>(getFrameSpec(group).top);
-                else
-                  dY -= static_cast<qreal>(getFrameSpec(group).bottom);
+              QString group = tspec_.merge_menubar_with_toolbar ? "Toolbar" : "MenuBar";
+              if (parentMenubar->mapToGlobal(QPoint(0,0)).y() > g.bottom()) // menu is above menubar
+                dY +=  menuShadow_.at(1) + menuShadow_.at(3) + static_cast<qreal>(getFrameSpec(group).top);
+              else
+                dY -= static_cast<qreal>(getFrameSpec(group).bottom);
 
-                QPoint activeTopLeft = parentMenubar->mapToGlobal(parentMenubar->actionGeometry(
-                                                                   parentMenubar->activeAction())
-                                                                 .topLeft());
-                if (activeTopLeft.x() > g.left()) // because of the right screen border
+              QPoint activeTopLeft = parentMenubar->mapToGlobal(parentMenubar->actionGeometry(
+                                                                 parentMenubar->activeAction())
+                                                               .topLeft());
+              if (activeTopLeft.x() > g.left()) // because of the right screen border
+              {
+                dX += menuShadow_.at(0);
+                qreal delta = menuShadow_.at(0) - static_cast<qreal>(activeTopLeft.x() - g.left());
+                if (delta > 0)
+                  dX -= delta;
+                else
+                  dX += qMin(menuShadow_.at(2), -delta);
+              }
+            }
+            else if (!sunkenButton_.isNull()
+                     && (!(pBtn = qobject_cast<QPushButton*>(sunkenButton_.data()))
+                         || pBtn->menu() == w)
+                     && (!(tBtn = qobject_cast<QToolButton*>(sunkenButton_.data()))
+                         || tBtn->menu() == w
+                         || (tBtn->defaultAction() && tBtn->defaultAction()->menu() == w)))
+            { // the menu is triggered by a push or tool button
+              QPoint wTopLeft = sunkenButton_.data()->mapToGlobal(QPoint(0,0));
+              if (wTopLeft.y() >= g.bottom()) // above the button (strange! Qt doesn't add 1px)
+                dY +=  menuShadow_.at(1) + menuShadow_.at(3);
+              if (wTopLeft.x() > g.left()) // because of the right screen border
+              {
+                dX += menuShadow_.at(0);
+                qreal delta = menuShadow_.at(0) - static_cast<qreal>(wTopLeft.x() - g.left());
+                if (delta > 0)
+                  dX -= delta;
+                else
+                  dX += qMin(menuShadow_.at(2), -delta);
+              }
+            }
+            else if (!ag.isEmpty()) // probably a panel menu
+            {
+              if (tspec_.isX11)
+              {
+                /* snap to the screen bottom/right if possible and,
+                   as the last resort, consider the cursor position */
+                if (g.top() != ag.top()
+                    && (g.bottom() == ag.bottom()
+                        || QCursor::pos(sc).y() > g.bottom()))
                 {
-                  dX += menuShadow_.at(0);
-                  qreal delta = menuShadow_.at(0) - static_cast<qreal>(activeTopLeft.x() - g.left());
-                  if (delta > 0)
-                    dX -= delta;
-                  else
-                    dX += qMin(menuShadow_.at(2), -delta);
+                  dY += menuShadow_.at(1) + menuShadow_.at(3);
+                }
+                if (g.left() != ag.left()
+                    && (g.right() == ag.right()
+                        || QCursor::pos(sc).x() > g.right()))
+                {
+                  dX += menuShadow_.at(0) + menuShadow_.at(2);
                 }
               }
-              else
+              else // the global position is unknown under Wayland
               {
-                if (!sunkenButton_.isNull()) // the menu is triggered by a button
+                /* snap to the parent window's top/left side if needed and,
+                   as the last resort, consider the cursor position */
+                QRect pg;
+                if (QWidget *p = w->parentWidget())
+                  pg = p->window()->geometry();
+                if ((!pg.isNull() && g.bottom() + 1 == pg.top())
+                    || QCursor::pos(sc).y() > g.bottom())
                 {
-                  QPoint wTopLeft = sunkenButton_.data()->mapToGlobal(QPoint(0,0));
-                  if (wTopLeft.y() >= g.bottom()) // above the button (strange! Qt doesn't add 1px)
-                    dY +=  menuShadow_.at(1) + menuShadow_.at(3);
-                  if (wTopLeft.x() > g.left()) // because of the right screen border
-                  {
-                    dX += menuShadow_.at(0);
-                    qreal delta = menuShadow_.at(0) - static_cast<qreal>(wTopLeft.x() - g.left());
-                    if (delta > 0)
-                      dX -= delta;
-                    else
-                      dX += qMin(menuShadow_.at(2), -delta);
-                  }
+                  dY += menuShadow_.at(1) + menuShadow_.at(3);
                 }
-                else if (!ag.isEmpty()) // probably a panel menu
+                if ((!pg.isNull() && g.right() + 1 == pg.left())
+                    || QCursor::pos(sc).x() > g.right())
                 {
-                  /* snap to the screen bottom/right if possible and,
-                     as the last resort, consider the cursor position */
-                  if (g.top() != ag.top()
-                      && (g.bottom() == ag.bottom()
-                          || QCursor::pos(sc).y() >= g.bottom()))
-                  {
-                    dY += menuShadow_.at(1) + menuShadow_.at(3);
-                  }
-                  if (g.left() != ag.left()
-                      && (g.right() == ag.right()
-                          || QCursor::pos(sc).x() >= g.right() + 1))
-                  {
-                    dX += menuShadow_.at(0) + menuShadow_.at(2);
-                  }
+                  dX += menuShadow_.at(0) + menuShadow_.at(2);
                 }
               }
             }
           }
         }
         else if (!parentMenu && parentMenubar)
-        {
+        { // triggered by a menubar, without compositing or shadow
           QString group = tspec_.merge_menubar_with_toolbar ? "Toolbar" : "MenuBar";
           if (parentMenubar->mapToGlobal(QPoint(0,0)).y() > g.bottom()) // menu is above menubar
             dY += static_cast<qreal>(getFrameSpec(group).top);
@@ -1169,8 +1260,9 @@ bool Style::eventFilter(QObject *o, QEvent *e)
         int DY = qRound(dY);
         if (DX == 0 && DY == 0) break;
 
+        /* This workaround isn't needed anymore. It didn't work with Wayland either. */
         // prevent the menu from switching to another screen
-        if (!sg.isEmpty() && QApplication::screens().size() > 1)
+        /*if (!sg.isEmpty() && QApplication::screens().size() > 1)
         {
           if (g.top() + DY < sg.top() && g.top() >= sg.top())
             DY = sg.top() - g.top();
@@ -1181,10 +1273,15 @@ bool Style::eventFilter(QObject *o, QEvent *e)
           }
           else if (g.left() + DX < sg.left() && g.left() >= sg.left())
             DX = sg.left() - g.left();
-        }
+        }*/
 
         w->move(g.left() + DX, g.top() + DY);
-        movedMenus.insert(w);
+        /* WARNING: Because of a bug in Qt 6.6, translucent menus -- especially context menus
+                    -- may be drawn with their minimum sizes and without contents after being
+                    moved on a non-primary screen. As a workaround, the menu is resized here. */
+        w->resize(g.size());
+        movedMenus_.insert(w);
+        connect(w, &QObject::destroyed, this, &Style::forgetMovedMenu);
       }
       else if (tspec_.group_toolbar_buttons && qobject_cast<QToolButton*>(o))
       {
@@ -1196,6 +1293,7 @@ bool Style::eventFilter(QObject *o, QEvent *e)
       }
       else if (qobject_cast<QAbstractItemView*>(o))
       {
+        if (tspec_.no_inactiveness) break;
         /* view palettes should also be set when the view is shown
            and not only when its window is activated/deactivated
            (-> QEvent::WindowActivate and QEvent::WindowDeactivate) */
@@ -1205,27 +1303,38 @@ bool Style::eventFilter(QObject *o, QEvent *e)
         {
           break;
         }
-        const label_spec lspec = getLabelSpec(QStringLiteral("ItemView"));
+        bool _forcePalette(false);
+        const label_spec lspec = getLabelSpec(KSL("ItemView"));
         if (isWidgetInactive(w)) // FIXME: probably not needed with inactive window
         {
           QColor col = getFromRGBA(lspec.normalInactiveColor);
           if (!col.isValid())
             col = standardPalette().color(QPalette::Inactive,QPalette::Text);
-          else
-            opacifyColor(col);
-          palette.setColor(QPalette::Inactive, QPalette::Text, col);
+          if (palette.color(QPalette::Inactive, QPalette::Text) != col)
+          {
+            _forcePalette = true;
+            palette.setColor(QPalette::Inactive, QPalette::Text, col);
+          }
           if (!hasInactiveSelItemCol_)
           {
-            forcePalette(w, palette);
+            if (_forcePalette)
+              forcePalette(w, palette);
             break;
           }
           col = getFromRGBA(lspec.toggleInactiveColor);
-          opacifyColor(col);
-          palette.setColor(QPalette::Inactive,QPalette::HighlightedText, col);
+          if (palette.color(QPalette::Inactive,QPalette::HighlightedText) != col)
+          {
+            _forcePalette = true;
+            palette.setColor(QPalette::Inactive,QPalette::HighlightedText, col);
+          }
           if (!toggledItemHasContrast_)
           {
-            palette.setColor(QPalette::Inactive, QPalette::Highlight,
-                             standardPalette().color(QPalette::Inactive,QPalette::Highlight));
+            col = standardPalette().color(QPalette::Inactive,QPalette::Highlight);
+            if (palette.color(QPalette::Inactive, QPalette::Highlight) != col)
+            {
+              _forcePalette = true;
+              palette.setColor(QPalette::Inactive, QPalette::Highlight, col);
+            }
           }
         }
         else
@@ -1233,44 +1342,58 @@ bool Style::eventFilter(QObject *o, QEvent *e)
           QColor col = getFromRGBA(lspec.normalColor);
           if (!col.isValid())
             col = standardPalette().color(QPalette::Active,QPalette::Text);
-          else
-            opacifyColor(col);
-          palette.setColor(QPalette::Inactive, QPalette::Text, col);
+          if (palette.color(QPalette::Inactive, QPalette::Text) != col)
+          {
+            _forcePalette = true;
+            palette.setColor(QPalette::Inactive, QPalette::Text, col);
+          }
           if (!hasInactiveSelItemCol_)
           {
-            forcePalette(w, palette);
+            if (_forcePalette)
+              forcePalette(w, palette);
             break;
           }
           col = getFromRGBA(lspec.toggleColor);
-          opacifyColor(col);
-          palette.setColor(QPalette::Inactive, QPalette::HighlightedText, col);
+          if (palette.color(QPalette::Inactive, QPalette::HighlightedText) != col)
+          {
+            _forcePalette = true;
+            palette.setColor(QPalette::Inactive, QPalette::HighlightedText, col);
+          }
           if (!toggledItemHasContrast_)
           {
-            palette.setColor(QPalette::Inactive, QPalette::Highlight,
-                             standardPalette().color(QPalette::Active,QPalette::Highlight));
+            col = standardPalette().color(QPalette::Active,QPalette::Highlight);
+            if (palette.color(QPalette::Inactive, QPalette::Highlight) != col)
+            {
+              _forcePalette = true;
+              palette.setColor(QPalette::Inactive, QPalette::Highlight, col);
+            }
           }
         }
-        forcePalette(w, palette);
+        if (_forcePalette)
+          forcePalette(w, palette);
       }
-      else if (gtkDesktop_
-               && (!w->parent() || !qobject_cast<QWidget *>(w->parent())
-                   || qobject_cast<QDialog *>(w) || qobject_cast<QMainWindow *>(w)))
+      /* see the case of QMenu above */
+      /*else if (w->inherits("QComboBoxPrivateContainer"))
       {
-        setGtkVariant(w, tspec_.dark_titlebar);
-      }
+        if (tspec_.combo_menu && tspec_.isX11
+            && !e->spontaneous() && w->windowHandle() != nullptr
+            && w->testAttribute(Qt::WA_X11NetWmWindowTypeCombo))
+        {
+          w->setAttribute(Qt::WA_X11NetWmWindowTypeCombo, false);
+          w->setAttribute(Qt::WA_X11NetWmWindowTypeCombo, true);
+        }
+      }*/
     }
     break;
 
-  /* FIXME For some reason unknown to me (a Qt5 bug?), the Qt5 spinbox size hint
-     is sometimes wrong as if Qt5 spinboxes don't have time to consult CT_SpinBox
-     although they should (-> qabstractspinbox.cpp -> QAbstractSpinBox::sizeHint).
-     The same thing rarely happened with Qt4 too. Here we force a minimum size by
-     using CT_SpinBox when the maximum size isn't set by the app or isn't smaller
-     than our size. */
+  /* WARNING: For some reason (e.g., the exitence of an app stylesheet),
+     the size hint of the spinbox may be wrong. Here we force a minimum
+     size by using CT_SpinBox when the maximum size isn't set by the app
+     or isn't smaller than our size. */
   case QEvent::ShowToParent:
     if (w
         /* not if it's just a QAbstractSpinBox, hoping that
-           no one sets the minimum width in normal cases */
+           no one sets the minimum size in normal cases */
         && (qobject_cast<QSpinBox*>(o)
             || qobject_cast<QDoubleSpinBox*>(o)
             || qobject_cast<QDateTimeEdit*>(o)))
@@ -1278,13 +1401,13 @@ bool Style::eventFilter(QObject *o, QEvent *e)
       QSize size = sizeFromContents(CT_SpinBox,nullptr,QSize(),w).expandedTo(w->minimumSize());
       if (w->maximumWidth() > size.width())
         w->setMinimumWidth(size.width());
-      if (w->maximumHeight() > size.height())
-        w->setMinimumHeight(size.height());
+      /*if (w->maximumHeight() > size.height())
+        w->setMinimumHeight(size.height());*/
     }
     /* correct line-edit palettes on stylable toolbars if needed */
     else if (qobject_cast<QLineEdit*>(o)
-             && (!getFrameSpec(QStringLiteral("ToolbarLineEdit")).element.isEmpty()
-                 || !getInteriorSpec(QStringLiteral("ToolbarLineEdit")).element.isEmpty())
+             && (!getFrameSpec(KSL("ToolbarLineEdit")).element.isEmpty()
+                 || !getInteriorSpec(KSL("ToolbarLineEdit")).element.isEmpty())
              && getStylableToolbarContainer(w, true))
     {
       const label_spec tlspec = getLabelSpec("Toolbar");
@@ -1292,32 +1415,28 @@ bool Style::eventFilter(QObject *o, QEvent *e)
       if (enoughContrast(col, standardPalette().color(QPalette::Active,QPalette::Text)))
       {
         QColor col1 = col;
-        opacifyColor(col1);
         QPalette palette = w->palette();
         palette.setColor(QPalette::Active, QPalette::Text, col1);
         if (!tspec_.no_inactiveness)
         {
           col1 = getFromRGBA(tlspec.normalInactiveColor);
           if (!col1.isValid()) col1 = col;
-          opacifyColor(col1);
         }
         palette.setColor(QPalette::Inactive, QPalette::Text, col1);
         col1 = col; // placeholder
         col1.setAlpha(128);
-        opacifyColor(col1);
         palette.setColor(QPalette::PlaceholderText, col1);
-        col.setAlpha(102); // 0.4 * disabledCol.alpha()
-        opacifyColor(col);
+        col.setAlpha(102); // 0.4 * col.alpha()
         palette.setColor(QPalette::Disabled, QPalette::Text,col);
         forcePalette(w, palette);
         /* also correct the color of the symbolic clear icon (-> CE_ToolBar) */
-        if (QAction *clearAction = w->findChild<QAction*>(QLatin1String("_q_qlineeditclearaction")))
+        if (QAction *clearAction = w->findChild<QAction*>(KL1("_q_qlineeditclearaction")))
           clearAction->setIcon(standardIcon(QStyle::SP_LineEditClearButton, nullptr, w));
       }
     }
     break;
 
-  case QEvent::PaletteChange :
+  /*case QEvent::PaletteChange :
     if (!isPcmanfm_ && qobject_cast<QLineEdit*>(o) && (tspec_.combo_as_lineedit || tspec_.square_combo_button))
     {
       if (QComboBox *cb = qobject_cast<QComboBox*>(w->parentWidget()))
@@ -1326,91 +1445,85 @@ bool Style::eventFilter(QObject *o, QEvent *e)
           cb->update(); // a workaround for bad codes that change line-edit base color
       }
     }
-    break;
+    break;*/
 
   case QEvent::Hide:
-    if (qobject_cast<QToolButton*>(o))
+    if (w)
     {
-      if (tspec_.group_toolbar_buttons)
+      if (qobject_cast<QToolButton*>(o))
       {
-        if (QToolBar *toolBar = qobject_cast<QToolBar*>(w->parentWidget()))
+        if (tspec_.group_toolbar_buttons)
         {
-          if (toolBar->orientation() != Qt::Vertical)
-            toolBar->update();
+          if (QToolBar *toolBar = qobject_cast<QToolBar*>(w->parentWidget()))
+          {
+            if (toolBar->orientation() != Qt::Vertical)
+              toolBar->update();
+          }
+        }
+        //break; // toolbuttons may be animated (see below)
+      }
+      else if (w->isEnabled() && tspec_.animate_states)
+      {
+        if (w->inherits("QComboBoxPrivateContainer")
+            && qobject_cast<QComboBox*>(w->parentWidget()))
+        {
+          /* start with an appropriate state on closing popup, considering
+             that lineedits only have normal and focused states in Kvantum */
+          if ((tspec_.combo_as_lineedit || tspec_.square_combo_button)
+              && qobject_cast<QComboBox*>(w->parentWidget())->lineEdit())
+          {
+            animationStartState_ = "normal"; // -> QEvent::FocusIn
+          }
+          else
+            animationStartState_ = "c-toggled"; // distinguish it from a toggled button
+          /* ensure that the combobox will be animated on closing popup
+             (especially needed if the cursor has been on the popup) */
+          animatedWidget_ = w->parentWidget();
+          animationOpacity_ = 0;
+          break;
+        }
+        else if (w->windowType() == Qt::Popup
+                 || w->windowType() == Qt::ToolTip)
+        { // let the popup origin have a fade-out animation
+          animatedWidget_ = popupOrigins_.value(w);
+          forgetPopupOrigin(o);
+        }
+        /* let the state animation continue (not necessary but useful
+           for better flash prevention -- see FocusIn and FocusOut) */
+        else if ((animatedWidget_ == w && opacityTimer_->isActive())
+                 || (animatedWidgetOut_ == w && opacityTimerOut_->isActive()))
+        {
+          break;
         }
       }
-      //break; // toolbuttons may be animated (see below)
-    }
-    else if (w && w->isEnabled() && tspec_.animate_states)
-    {
-      if (w->inherits("QComboBoxPrivateContainer")
-          && qobject_cast<QComboBox*>(w->parentWidget()))
+
+      /* remove the widget from some lists when it becomes hidden */
+      if (qobject_cast<QMenu*>(w))
+        forgetMovedMenu(o);
+      if (tspec_.animate_states
+          && (w->windowType() == Qt::Popup
+              || w->windowType() == Qt::ToolTip))
       {
-        /* start with an appropriate state on closing popup, considering
-           that lineedits only have normal and focused states in Kvantum */
-        if ((tspec_.combo_as_lineedit || tspec_.square_combo_button)
-            && qobject_cast<QComboBox*>(w->parentWidget())->lineEdit())
-        {
-          animationStartState_ = "normal"; // -> QEvent::FocusIn
-        }
-        else
-          animationStartState_ = "c-toggled"; // distinguish it from a toggled button
-        /* ensure that the combobox will be animated on closing popup
-           (especially needed if the cursor has been on the popup) */
-        animatedWidget_ = w->parentWidget();
-        animationOpacity_ = 0;
-        break;
-      }
-      else if (w->windowType() == Qt::Popup
-               || w->windowType() == Qt::ToolTip)
-      { // let the popup origin have a fade-out animation
-        animatedWidget_ = popupOrigins_.value(w);
-        popupOrigins_.remove(w);
-      }
-      /* let the state animation continue (not necessary but useful
-         for better flash prevention -- see FocusIn and FocusOut) */
-      else if ((animatedWidget_ == w && opacityTimer_->isActive())
-               || (animatedWidgetOut_ == w && opacityTimerOut_->isActive()))
-      {
-        break;
+        forgetPopupOrigin(o);
+        break; // popups aren't animated (see below)
       }
     }
     /* Falls through. */
 
-  case QEvent::Destroy: // FIXME: Isn't QEvent::Hide enough?
-    if (w)
+  case QEvent::Destroy: // not necessary
+    if (w && tspec_.animate_states)
     {
-      if (qobject_cast<QMenu*>(w))
-        movedMenus.remove(w);
-
-      if (!progressbars_.isEmpty() && qobject_cast<QProgressBar*>(o))
+      if (animatedWidget_ == w)
       {
-        progressbars_.remove(w);
-        if (progressbars_.size() == 0)
-          progressTimer_->stop();
+        opacityTimer_->stop();
+        animatedWidget_ = nullptr;
+        animationOpacity_ = 100;
       }
-      else if (tspec_.animate_states)
+      if (animatedWidgetOut_ == w)
       {
-        if (w->windowType() == Qt::Popup
-            || w->windowType() == Qt::ToolTip)
-        {
-          popupOrigins_.remove(w);
-        }
-        else // popups aren't animated
-        {
-          if (animatedWidget_ == w)
-          {
-            opacityTimer_->stop();
-            animatedWidget_ = nullptr;
-            animationOpacity_ = 100;
-          }
-          if (animatedWidgetOut_ == w)
-          {
-            opacityTimerOut_->stop();
-            animatedWidgetOut_ = nullptr;
-            animationOpacityOut_ = 100;
-          }
-        }
+        opacityTimerOut_->stop();
+        animatedWidgetOut_ = nullptr;
+        animationOpacityOut_ = 100;
       }
     }
     break;

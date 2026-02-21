@@ -23,7 +23,6 @@ slider_handle_width=16
 slider_handle_length=16
 check_size=16
 toolbar_icon_size=16
-dark_titlebar=true
 animate_states=true
 transient_groove=false
 transient_scrollbar=true
@@ -150,8 +149,8 @@ inherits=PanelButtonCommand
 interior.element=tab
 text.margin.left=6
 text.margin.right=6
-text.margin.top=2
-text.margin.bottom=2
+text.margin.top=3
+text.margin.bottom=3
 frame.element=tab
 indicator.element=tab
 frame.top=4
@@ -160,7 +159,7 @@ frame.left=4
 frame.right=4
 text.press.color=white
 text.toggle.color=white
-min_width=4font
+min_width=+2
 min_height=2.0font
 
 [TabFrame]

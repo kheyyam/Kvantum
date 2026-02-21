@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2024 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -23,30 +23,18 @@
 
 int main (int argc, char *argv[])
 {
-  QApplication::setApplicationName ("KvantumViewer");
-  QApplication viewer (argc,argv);
-  viewer.setAttribute(Qt::AA_UseHighDpiPixmaps, true);
+  QApplication viewer (argc, argv);
+  viewer.setApplicationName ("Kvantum Preview");
 
-  QStringList langs (QLocale::system().uiLanguages());
-  QString lang; // bcp47Name() doesn't work under vbox
-  if (!langs.isEmpty())
-      lang = langs.first().replace ('-', '_');
   QTranslator qtTranslator;
-  if (!qtTranslator.load ("qt_" + lang, QLibraryInfo::location (QLibraryInfo::TranslationsPath)))
-  { // shouldn't be needed
-    if (!langs.isEmpty())
-    {
-      lang = langs.first().split (QLatin1Char ('_')).first();
-      qtTranslator.load ("qt_" + lang, QLibraryInfo::location (QLibraryInfo::TranslationsPath));
-    }
-  }
-  viewer.installTranslator (&qtTranslator);
+  if (qtTranslator.load ("qt_" + QLocale::system().name(), QLibraryInfo::path (QLibraryInfo::TranslationsPath)))
+    viewer.installTranslator (&qtTranslator);
 
   QTranslator KPTranslator;
-  KPTranslator.load ("kvantumpreview_" + lang, QStringLiteral (DATADIR) + "/kvantumpreview/translations");
-  viewer.installTranslator (&KPTranslator);
+  if (KPTranslator.load ("kvantumpreview_" + QLocale::system().name(), QStringLiteral (DATADIR) + "/kvantumpreview/translations"))
+    viewer.installTranslator (&KPTranslator);
 
-  KvantumPreview k (NULL);
+  KvantumPreview k (nullptr);
   k.show();
   QList<QTabWidget *> list = k.findChildren<QTabWidget*>();
   if (!list.isEmpty())

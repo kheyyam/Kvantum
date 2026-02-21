@@ -27,7 +27,6 @@ popup_blurring=false
 toolbar_icon_size=16
 animate_states=true
 alt_mnemonic=true
-button_contents_shift=true
 button_icon_size=16
 combo_as_lineedit=true
 combo_menu=true
@@ -41,8 +40,6 @@ joined_inactive_tabs=true
 no_inactive_tab_expansion=true
 tab_button_extra_margin=0.15font
 large_icon_size=32
-layout_margin=4
-layout_spacing=2
 merge_menubar_with_toolbar=false
 respect_DE=true
 scroll_arrows=true
@@ -111,6 +108,7 @@ text.normal.inactive.color=#000000bf
 text.focus.color=black
 text.press.color=black
 text.toggle.color=white
+indicator.size=10
 frame.expansion=8
 
 [PanelButtonTool]
@@ -186,7 +184,7 @@ frame.left=1
 frame.right=1
 
 [TreeExpander]
-indicator.size=9
+indicator.size=10
 
 [HeaderSection]
 inherits=PanelButtonCommand

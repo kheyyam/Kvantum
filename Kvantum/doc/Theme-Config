@@ -224,15 +224,14 @@ comment                           String              Obvious.
 respect_DE                        true/false          Should some settings of the current
                                                       DE be respected? True by default.
 
-                                                      KDE, Unity, Gnome and Pantheon are
-                                                      supported. Under KDE, the keys
-                                                      "small_icon_size" and "large_icon_size"
-                                                      are overridden by KDE settings. Under
-                                                      Unity, Gnome and Pantheon,
-                                                      "iconless_pushbutton" and "iconless_menu"
-                                                      are set to true, "composite" is set to
-                                                      false, and "x11drag" is set to
-                                                      "menubar_and_primary_toolbar".
+                                                      KDE, Gnome and Pantheon are supported.
+                                                      Under KDE, the keys "small_icon_size"
+                                                      and "large_icon_size" are overridden
+                                                      by KDE settings. Under Gnome and
+                                                      Pantheon, "iconless_pushbutton" and
+                                                      "iconless_menu" are set to true, and
+                                                      "blurring" and "popup_blurring" are set
+                                                      to false.
 
 x11drag                           String              Drag windows from contents? Values:
                                                         none
@@ -417,8 +416,9 @@ toolbar_interior_spacing          Integer             The space around the inter
                                                       Zero by default.
 
 toolbar_separator_thickness       Integer             The thickness of toolbar separators. It is
-                                                      never less than the toolbar indicator size
-                                                      or 4, whichever is greater.
+                                                      never less than 2. Its default value is
+                                                      the toolbar indicator size or 4, whichever
+                                                      is greater.
 
 center_toolbar_handle             true/false          If "true", the SVG element for the
                                                       toolbar handle will be centered
@@ -532,9 +532,18 @@ tooltip_shadow_depth              Integer             The depth of the shadow to
                                                       A value of zero, its absence or a false
                                                       value for "composite" means no shadow.
 
+menu_blur_radius
+tooltip_blur_radius               Integer             The corner radii for blurring translucent
+                                                      menus and tooltips that have rounded
+                                                      corners. The default value is 0 and the
+                                                      maximum is 10.
+
+                                                      Usually, a value of 2 is enough for
+                                                      preventing artifacts.
+
 translucent_windows               true/false          Translucent windows and dialogs?
                                                       This requires a translucent SVG
-                                                      element for windows or a positive value
+                                                      element for windows or a nonzero value
                                                       for "reduce_window_opacity". A false
                                                       value, its absence or a false value for
                                                       "composite" means no translucency.
@@ -553,6 +562,10 @@ reduce_window_opacity             Integer             If "translucent_windows" i
                                                       window background exists in the SVG image
                                                       or not. The default value is 0 and the
                                                       maximum is 90.
+
+                                                      NOTE: A negative value means that the
+                                                      opacity will be reduced only for inactive
+                                                      windows.
 
 reduce_menu_opacity               Integer             As above but for menus.
 
@@ -682,9 +695,6 @@ groupbox_top_label                true/false          Draw the group-box label a
                                                       group boxes will not have interior or
                                                       frame expansion.
 
-button_contents_shift             true/false          Shift the contents of push-buttons when
-                                                      they are down? It is true by default.
-
 slider_width                      Integer             The width of sliders. It cannot be
                                                       greater than 48px and is 8px by default.
 
@@ -755,11 +765,6 @@ remove_extra_frames               true/false          Some apps may draw extra g
                                                       around some contents. They will be
                                                       removed if this key is set to true. Its
                                                       default value is false.
-
-dark_titlebar                     true/false          Should a dark titlebar be requested
-                                                      under Gtk desktops like Gnome? Although
-                                                      the default is "false", it is good to
-                                                      set this key to "true" for dark themes.
 
                        *********************************
                        *** The GeneralColors Section ***
@@ -942,6 +947,14 @@ middle_click_scroll               true/false          Should the scroll slider j
                                                       clicked? The default is false and the
                                                       jump is done by a left click.
 
+kinetic_scrolling                 true/false          Scroll some scrollable widgets by
+                                                      flicking them with the left mouse button.
+
+                                                      Warning: Qt's kinetic scrolling has bugs
+                                                      and may seriously interfere with other
+                                                      jobs. It should not be enabled by theme
+                                                      makers.
+
                            **********************
                            *** Other Sections ***
                            **********************
@@ -999,6 +1012,12 @@ frame.expansion                   Integer             A positive value (in px) w
                                                       by the height of the app font (in px) and
                                                       could also be a decimal (as in
                                                       "frame.expansion=2.8font").
+
+                                                      Note: Its value may be ignored with some
+                                                      widgets (like header sections of tables)
+                                                      or when there is something wrong with the
+                                                      style code of an app. Also, it is limited
+                                                      to half the widget height for view items.
 
 frame.patternsize                 Integer             The frame pattern size. Used for tiling
                                                       the frame of a widget with a pattern. A

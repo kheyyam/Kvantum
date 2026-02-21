@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2020 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2024 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -141,6 +141,12 @@ private:
   QPointer<QWindow> lastWin_;
   QPointer<QWidget> widgetTarget_;
   QPointer<QWidget> pressedWidget_;
+
+  /* used by a workaround */
+  QPointer<QWidget> clickedWidget_;
+  bool DblClickSent_;
+  bool preventDbClick_;
+
   QPointer<QWidget> lastPressedWidget_;
   bool dragAboutToStart_;
   bool dragInProgress_;

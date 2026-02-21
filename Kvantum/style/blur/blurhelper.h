@@ -1,7 +1,7 @@
-// Adapted from Oxygen-Transparent -> oxygenblurhelper.h
+// Some functions were adapted from Oxygen-Transparent -> oxygenblurhelper.h
 
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2019 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2024 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -27,7 +27,7 @@
 #include <QTimerEvent>
 #include <QRegion>
 
-#if defined Q_WS_X11 || defined Q_OS_LINUX
+#ifdef NO_KF
 #include <X11/Xdefs.h>
 #endif
 
@@ -40,11 +40,13 @@ class BlurHelper: public QObject
   public:
 
     BlurHelper (QObject*, QList<qreal> menuS, QList<qreal> tooltipS,
+                int menuBlurRadius = 0, int toolTipBlurRadius = 0,
                 qreal contrast = static_cast<qreal>(1),
                 qreal intensity = static_cast<qreal>(1),
-                qreal saturation = static_cast<qreal>(1));
+                qreal saturation = static_cast<qreal>(1),
+                bool onlyActiveWindow = false);
 
-    virtual ~BlurHelper (void) {}
+    virtual ~BlurHelper() {}
 
     void registerWidget (QWidget*);
     void unregisterWidget (QWidget*);
@@ -70,14 +72,14 @@ class BlurHelper: public QObject
 
     /* Update blur region for all pending widgets. A timer is
        used to allow some buffering of the update requests. */
-    void delayedUpdate (void)
+    void delayedUpdate()
     {
       if (!timer_.isActive())
         timer_.start (10, this);
     }
-    void update (void)
+    void update()
     {
-      for (const WidgetPointer& widget : static_cast<const WidgetSet&>(pendingWidgets_))
+      for (const WidgetPointer& widget : std::as_const(pendingWidgets_))
       {
         if (widget)
           update (widget.data());
@@ -93,6 +95,13 @@ class BlurHelper: public QObject
 
   private:
 
+    bool isWidgetActive (const QWidget *widget) const;
+    bool isNormalWindow (const QWidget *widget) const;
+
+#ifndef NO_KF
+    void onOpacityChange (qreal opacity);
+#endif
+
     /* List of widgets for which blur region must be updated. */
     typedef QPointer<QWidget> WidgetPointer;
     typedef QHash<QWidget*, WidgetPointer> WidgetSet;
@@ -106,7 +115,18 @@ class BlurHelper: public QObject
     QList<qreal> menuShadow_;
     QList<qreal> tooltipShadow_;
 
+    int menuBlurRadius_;
+    int toolTipBlurRadius_;
+
     qreal contrast_, intensity_, saturation_;
+
+    bool onlyActiveWindow_;
+
+#ifdef NO_KF
+    /* The required atom. */
+    Atom atom_blur_;
+    bool isX11_;
+#endif
 };
 }
 

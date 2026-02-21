@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2019 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2024 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -19,22 +19,20 @@
 #include <QFile>
 #include <QApplication>
 #include "ThemeConfig.h"
+
 #if defined Q_WS_X11 || defined Q_OS_LINUX || defined Q_OS_FREEBSD || defined Q_OS_OPENBSD || defined Q_OS_NETBSD || defined Q_OS_HURD
-#include <QX11Info>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #endif
-#define KSL(x) QStringLiteral(x)
 
 namespace Kvantum {
+
 ThemeConfig::ThemeConfig(const QString& theme) :
   settings_(nullptr),
   parentConfig_(nullptr)
 {
-  /* For now, the lack of x11 means wayland.
-     Later, a better method should be found. */
 #if defined Q_WS_X11 || defined Q_OS_LINUX || defined Q_OS_FREEBSD || defined Q_OS_OPENBSD || defined Q_OS_NETBSD || defined Q_OS_HURD
-  isX11_ = QX11Info::isPlatformX11();
+  isX11_ = (QString::compare(QGuiApplication::platformName(), "xcb", Qt::CaseInsensitive) == 0);
 #else
   isX11_ = false;
 #endif
@@ -203,7 +201,7 @@ frame_spec ThemeConfig::getFrameSpec(const QString &elementName)
         if (v.isValid())
         {
           QString value = v.toString();
-          if (value.endsWith("font"))
+          if (value.endsWith(KL1("font")))
           { // multiply by the app font height
             r.expansion = qMax(value.left(value.length()-4).toFloat(), 0.0f)
                           * QFontMetrics(QApplication::font()).boundingRect(QLatin1Char('M')).height()*1.6;
@@ -489,7 +487,7 @@ label_spec ThemeConfig::getLabelSpec(const QString &elementName)
     v = getValue(name,KSL("text.margin.right"), i);
     r.right = qMax(v.toInt(),0);
 
-    /* let's have more compact buttons */
+    /* let's make button-like widgets a little compact */
     if(name == "LineEdit")
     {
       r.top = qMax(0,r.top-1);
@@ -546,9 +544,9 @@ size_spec ThemeConfig::getSizeSpec(const QString& elementName)
   if (v.isValid())
   {
     QString value = v.toString();
-    if (value.startsWith("+"))
+    if (value.startsWith(KL1("+")))
       r.incrementH = true;
-    if (value.endsWith("font"))
+    if (value.endsWith(KL1("font")))
     { // multiply by the app font height
       r.minH = qMax(value.left(value.length()-4).toFloat(), 0.0f)
                * QFontMetrics(QApplication::font()).boundingRect(QLatin1Char('M')).height()*1.6;
@@ -562,9 +560,9 @@ size_spec ThemeConfig::getSizeSpec(const QString& elementName)
   if (v.isValid())
   {
     QString value = v.toString();
-    if (value.startsWith("+"))
+    if (value.startsWith(KL1("+")))
       r.incrementW = true;
-    if (value.endsWith("font"))
+    if (value.endsWith(KL1("font")))
     { // multiply by the app font height
       r.minW = qMax(value.left(value.length()-4).toFloat(), 0.0f)
                * QFontMetrics(QApplication::font()).boundingRect(QLatin1Char('M')).height()*1.6;
@@ -584,12 +582,21 @@ theme_spec ThemeConfig::getCompositeSpec()
 #if defined Q_WS_X11 || defined Q_OS_LINUX || defined Q_OS_FREEBSD || defined Q_OS_OPENBSD || defined Q_OS_NETBSD || defined Q_OS_HURD
   if (isX11_)
   {
-    Atom atom = XInternAtom (QX11Info::display(), "_NET_WM_CM_S0", False);
-    if (XGetSelectionOwner(QX11Info::display(), atom))
-      compositing = true;
+    if (auto x11NativeInterfce = qApp->nativeInterface<QNativeInterface::QX11Application>())
+    {
+      Atom atom = XInternAtom(x11NativeInterfce->display(), "_NET_WM_CM_S0", False);
+      if (XGetSelectionOwner(x11NativeInterfce->display(), atom))
+        compositing = true;
+    }
   }
-  else
-    compositing = true; // wayland is always composited
+  else if (QString::compare(QGuiApplication::platformName(), "wayland", Qt::CaseInsensitive) == 0)
+  {
+    /* Wayland is always composited.
+       NOTE: Even under Linux, there's at least one situation, where the lack of x11
+             doesn't mean Wayland: KWin-Wayland's menus and tooltips are polished
+             when the platform name isn't set to "wayland". */
+    compositing = true;
+  }
 #endif
 
   /* no blurring or window translucency without compositing */
@@ -613,7 +620,7 @@ theme_spec ThemeConfig::getCompositeSpec()
 
       if (ispec.hasInterior
           || (!nonIntegerScale
-              && getValue(KSL("General"),KSL("reduce_window_opacity")).toInt() > 0))
+              && getValue(KSL("General"),KSL("reduce_window_opacity")).toInt() != 0))
       {
         v = getValue(KSL("General"),KSL("translucent_windows"));
         if (v.isValid())
@@ -678,7 +685,7 @@ theme_spec ThemeConfig::getThemeSpec()
 
   v = getValue(KSL("General"),KSL("reduce_window_opacity"));
   if (v.isValid()) // compositing will be checked by the code
-    r.reduce_window_opacity = qMin(qMax(v.toInt(),0),90);
+    r.reduce_window_opacity = qMin(qMax(v.toInt(),-90),90);
 
   v = getValue(KSL("General"),KSL("reduce_menu_opacity"));
   if (v.isValid()) // compositing will be checked by the code
@@ -714,10 +721,8 @@ theme_spec ThemeConfig::getThemeSpec()
       r.x11drag = WindowManager::toDrag(v.toString());
   }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
   v = getValue(KSL("General"),KSL("drag_from_buttons"));
   r.drag_from_buttons = v.toBool();
-#endif
 
   v = getValue(KSL("General"),KSL("respect_DE"));
   if (v.isValid()) // true by default
@@ -759,7 +764,7 @@ theme_spec ThemeConfig::getThemeSpec()
   if (v.isValid()) // 0 by default
   {
     QString value = v.toString();
-    if (value.endsWith("font"))
+    if (value.endsWith(KL1("font")))
     { // multiply by the app font height
       r.active_tab_overlap = qMax(value.left(value.length()-4).toFloat(), 0.0f)
                              * QFontMetrics(QApplication::font()).boundingRect(QLatin1Char('M')).height()*1.6;
@@ -780,7 +785,7 @@ theme_spec ThemeConfig::getThemeSpec()
   {
     int max = QFontMetrics(QApplication::font()).boundingRect(QLatin1Char('M')).height()*1.6;
     QString value = v.toString();
-    if (value.endsWith("font"))
+    if (value.endsWith(KL1("font")))
     { // multiply by the app font height
       r.tab_button_extra_margin = qMin(qMax(value.left(value.length()-4).toFloat(), 0.0f),1.0f)
                                   * max;
@@ -810,7 +815,7 @@ theme_spec ThemeConfig::getThemeSpec()
     r.toolbar_interior_spacing = qMax(v.toInt(),0);
 
   v = getValue(KSL("General"),KSL("toolbar_separator_thickness"));
-  if (v.isValid()) // 0 by default
+  if (v.isValid()) // -1 by default
     r.toolbar_separator_thickness = qMax(v.toInt(),0);
 
   v = getValue(KSL("General"),KSL("center_toolbar_handle"));
@@ -833,7 +838,7 @@ theme_spec ThemeConfig::getThemeSpec()
   if (v.isValid()) // 0 by default
   {
     QString value = v.toString();
-    if (value.endsWith("font"))
+    if (value.endsWith(KL1("font")))
     { // multiply by the app font height
       r.progressbar_thickness = qMax(value.left(value.length()-4).toFloat(), 0.0f)
                                 * QFontMetrics(QApplication::font()).boundingRect(QLatin1Char('M')).height()*1.6;
@@ -942,9 +947,9 @@ theme_spec ThemeConfig::getThemeSpec()
   v = getValue(KSL("General"),KSL("groupbox_top_label"));
   r.groupbox_top_label = v.toBool();
 
-  v = getValue(KSL("General"),KSL("button_contents_shift"));
+  /*v = getValue(KSL("General"),KSL("button_contents_shift"));
   if (v.isValid()) // true by default
-    r.button_contents_shift = v.toBool();
+    r.button_contents_shift = v.toBool();*/
 
   v = getValue(KSL("General"),KSL("transient_scrollbar"));
   r.transient_scrollbar = v.toBool();
@@ -1012,8 +1017,13 @@ theme_spec ThemeConfig::getThemeSpec()
   v = getValue(KSL("General"),KSL("no_window_pattern"));
   r.no_window_pattern = v.toBool();
 
-  v = getValue(KSL("General"),KSL("dark_titlebar"));
-  r.dark_titlebar = v.toBool();
+  v = getValue(KSL("General"),KSL("menu_blur_radius"));
+  if (v.isValid())
+    r.menu_blur_radius = qMin(v.toInt(),10);
+
+  v = getValue(KSL("General"),KSL("tooltip_blur_radius"));
+  if (v.isValid())
+    r.tooltip_blur_radius = qMin(v.toInt(),10);
 
   return r;
 }
@@ -1132,12 +1142,6 @@ hacks_spec ThemeConfig::getHacksSpec() const
   v = getValue(KSL("Hacks"),KSL("blur_translucent"));
   r.blur_translucent = v.toBool();
 
-#if (QT_VERSION == QT_VERSION_CHECK(5,14,0))
-  /* A workaround for a nasty bug about text translucency in Qt 5.14.0.
-     The bug was fixed in Qt 5.14.1. */
-  r.opaque_colors = true; // false by default
-#endif
-
   v = getValue(KSL("Hacks"),KSL("transparent_ktitle_label"));
   r.transparent_ktitle_label = v.toBool();
 
@@ -1188,12 +1192,16 @@ hacks_spec ThemeConfig::getHacksSpec() const
   v = getValue(KSL("Hacks"),KSL("centered_forms"));
   r.centered_forms = v.toBool();
 
-  v = getValue(KSL("Hacks"),KSL("kinetic_scrolling"));
-  r.kinetic_scrolling = v.toBool();
+  /*v = getValue(KSL("Hacks"),KSL("kinetic_scrolling"));
+  r.kinetic_scrolling = v.toBool();*/
 
   v = getValue(KSL("Hacks"),KSL("noninteger_translucency"));
   r.noninteger_translucency = v.toBool();
 
+  v = getValue(KSL("Hacks"),KSL("blur_only_active_window"));
+  r.blur_only_active_window = v.toBool();
+
   return r;
 }
+
 }

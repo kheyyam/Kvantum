@@ -11,8 +11,10 @@ group_toolbar_buttons=true
 spread_progressbar=true
 composite=true
 menu_shadow_depth=7
+menu_blur_radius=2
 spread_menuitems=true
 tooltip_shadow_depth=6
+tooltip_blur_radius=2
 scroll_width=12
 scroll_arrows=false
 scroll_min_extent=50
@@ -80,6 +82,8 @@ iconless_menu=false
 transparent_arrow_button=true
 lxqtmainmenu_iconsize=22
 single_top_toolbar=true
+no_selection_tint=true
+centered_forms=true
 
 [PanelButtonCommand]
 frame=true
@@ -99,8 +103,8 @@ text.shadow=0
 text.margin=1
 text.iconspacing=4
 indicator.element=arrow
-text.margin.top=3
-text.margin.bottom=3
+text.margin.top=2
+text.margin.bottom=2
 text.margin.left=3
 text.margin.right=3
 frame.expansion=10
@@ -133,7 +137,7 @@ frame.top=3
 frame.bottom=3
 frame.left=3
 frame.right=3
-indicator.size=9
+indicator.size=10
 text.normal.color=black
 
 [RadioButton]
@@ -196,7 +200,7 @@ indicator.size=12
 text.normal.color=black
 text.focus.color=#0052aa
 min_width=4font
-min_height=1.87font
+min_height=1.4font
 
 [TabFrame]
 inherits=PanelButtonCommand

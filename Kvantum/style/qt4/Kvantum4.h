@@ -28,7 +28,9 @@
 #include "ThemeConfig4.h"
 #include "blurhelper4.h"
 
+QT_BEGIN_NAMESPACE
 class QSvgRenderer;
+QT_END_NAMESPACE
 
 namespace Kvantum {
 
@@ -379,8 +381,6 @@ class Style : public QCommonStyle {
        They're used to position submenus correctly. */
     QList<int> menuShadow_;
 
-    /* Is this DE GTK-based? Currently Gnome, Unity and Pantheon are supported. */
-    bool gtkDesktop_;
     /* Under Gnome and Unity, we disable compositing because otherwise, DE shadows
        would be drawn around Kvantum's menu shadows. Other DEs have their own ways
        of preventing that or the user could disable compositing with Kvantum Manager. */

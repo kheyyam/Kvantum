@@ -8,8 +8,10 @@ spread_progressbar=true
 progressbar_thickness=6
 composite=true
 menu_shadow_depth=7
+menu_blur_radius=2
 spread_menuitems=true
 tooltip_shadow_depth=6
+tooltip_blur_radius=2
 slider_width=4
 slider_handle_width=18
 slider_handle_length=12
@@ -31,7 +33,6 @@ large_icon_size=32
 button_icon_size=16
 toolbar_icon_size=16
 animate_states=true
-button_contents_shift=true
 combo_as_lineedit=true
 combo_menu=true
 groupbox_top_label=true
@@ -39,10 +40,9 @@ inline_spin_indicators=true
 joined_inactive_tabs=true
 transient_scrollbar=true
 transient_groove=true
-layout_spacing=2
+layout_spacing=3
 submenu_overlap=0
 tooltip_delay=-1
-dark_titlebar=true
 check_size=16
 
 [GeneralColors]
@@ -140,8 +140,8 @@ frame.expanded.bottom=2
 frame.expanded.left=2
 frame.expanded.right=2
 frame.expansion=2.5font
-text.margin.left=6
-text.margin.right=6
+text.margin.left=4
+text.margin.right=4
 indicator.element=carrow
 
 [IndicatorSpinBox]
@@ -180,8 +180,8 @@ text.shadow=false
 inherits=PanelButtonCommand
 text.margin.left=6
 text.margin.right=6
-text.margin.top=3
-text.margin.bottom=4
+text.margin.top=4
+text.margin.bottom=3
 text.toggle.color=white
 text.shadow=false
 frame.top=3
@@ -363,6 +363,8 @@ text.focus.color=white
 
 [ComboBox]
 inherits=LineEdit
+text.margin.left=6
+text.margin.right=6
 text.toggle.color=white
 indicator.element=carrow
 

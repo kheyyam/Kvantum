@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2018 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2018-2025 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -36,10 +36,8 @@ class KvantumManager : public QMainWindow
     Q_OBJECT
 
 public:
-    KvantumManager (const QString& lang = QString(), QWidget *parent = 0);
+    KvantumManager (QWidget *parent = nullptr);
     ~KvantumManager();
-
-    void showWindow();
 
 protected:
     void closeEvent (QCloseEvent *event);
@@ -68,9 +66,11 @@ private slots:
     void trantsientScrollbarEnbled (bool checked);
     void showWhatsThis();
     void aboutDialog();
+    void openUserConfigFile (const QString &link);
+    void setTabWidgetFocus();
 
 private:
-    void fitThirdPageToContents();
+    void fitConfPageToContents();
     QString tooTipToWhatsThis (const QString &tip);
     void notWritable (const QString &path);
     void canNotBeRemoved (const QString &path, bool isDir);
@@ -80,7 +80,7 @@ private:
     QString rootThemeDir (const QString &themeName) const;
     bool isLightWithDarkDir (const QString &folderPath) const;
     void updateThemeList (bool updateAppThemes = true);
-    void showAnimated (QWidget *w, int duration);
+    void showAnimated (QWidget *w, int type = -1, int duration = 0);
     void defaultThemeButtons();
     void restyleWindow();
     void writeOrigAppLists();
@@ -117,17 +117,22 @@ private:
     QString lastPath_;
     /* For running Kvantum Preview */
     QProcess *process_;
+    /* The user condig directory */
     QString xdg_config_home;
     /* Theme name in the kvconfig file */
     QString kvconfigTheme_;
+    /* Animations */
     QGraphicsOpacityEffect *effect_;
     QPropertyAnimation *animation_;
+    QSet<QString> animatedWidgets_;
+    /* For DE-specific settings */
     QByteArray desktop_;
+
     QHash<QString, QStringList> appThemes_, origAppThemes_;
     bool confPageVisited_;
-    QString lang_;
     QString modifiedSuffix_;
     QString kvDefault_;
+    QString userConfigFile_;
 
     bool centerDefaultDocTabs_, centerDefaultNormalTabs_;
 };

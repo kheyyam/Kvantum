@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2019 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2024 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -40,78 +40,11 @@
 #include <QWindow>
 #include <QDialog>
 #include <QLayout> // only for forceSizeGrip
-#include <QCompleter> // only for combo menu change in  Kvantum Manager
+#include <QCompleter> // only for combo menu change in Kvantum Manager
 #include <QScroller>
 
 namespace Kvantum
 {
-
-static QString readDconfSetting(const QString &setting) // by Craig Drummond
-{
-  // For some reason, dconf does not seem to terminate correctly when run under some desktops (e.g. KDE)
-  // Destroying the QProcess seems to block, causing the app to appear to hang before starting.
-  // So, create QProcess on the heap - and only wait 1.5s for response. Connect finished to deleteLater
-  // so that the object is destroyed.
-  QString schemeToUse=QLatin1String("/org/gnome/desktop/interface/");
-  QProcess *process=new QProcess();
-  process->start(QLatin1String("dconf"), QStringList() << QLatin1String("read") << schemeToUse+setting);
-  QObject::connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                   [=](int /*exitCode*/, QProcess::ExitStatus /*exitStatus*/){ process->deleteLater(); });
-
-  if (process->waitForFinished(1500)) {
-    QString resp = process->readAllStandardOutput();
-    resp = resp.trimmed();
-    resp.remove('\'');
-
-    if (resp.isEmpty()) {
-      // Probably set to the default, and dconf does not store defaults! Therefore, need to read via gsettings...
-      schemeToUse=schemeToUse.mid(1, schemeToUse.length()-2).replace("/", ".");
-      QProcess *gsettingsProc=new QProcess();
-      gsettingsProc->start(QLatin1String("gsettings"), QStringList() << QLatin1String("get") << schemeToUse << setting);
-      QObject::connect(gsettingsProc, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                       [=](int /*exitCode*/, QProcess::ExitStatus /*exitStatus*/){ process->deleteLater(); });
-      if (gsettingsProc->waitForFinished(1500)) {
-        resp = gsettingsProc->readAllStandardOutput();
-        resp = resp.trimmed();
-        resp.remove('\'');
-      } else {
-        gsettingsProc->kill();
-      }
-    }
-    return resp;
-  }
-  process->kill();
-  return QString();
-}
-
-static void setAppFont()
-{
-  // First check platform theme.
-  QByteArray qpa = qgetenv("QT_QPA_PLATFORMTHEME");
-
-  // QGnomePlatform already sets from from Gtk settings, so no need to repeat this!
-  if (qpa == "gnome")
-    return;
-
-  QString fontName = readDconfSetting("font-name");
-  if (!fontName.isEmpty())
-  {
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
-    QStringList parts = fontName.split(' ', Qt::SkipEmptyParts);
-#else
-    QStringList parts = fontName.split(' ', QString::SkipEmptyParts);
-#endif
-    if (parts.length()>1)
-    {
-      uint size = parts.takeLast().toUInt();
-      if (size>5 && size<20)
-      {
-        QFont f(parts.join(" "), size);
-        QApplication::setFont(f);
-      }
-    }
-  }
-}
 
 /* WARNING: For easily distinguishing animated widgets (-> "eventFiltering.cpp")
             from others that also have event filter, event filters should be
@@ -124,11 +57,6 @@ void Style::polish(QWidget *widget)
      This will be useful if the style changes to Kvantum in runtime. */
   if (!widget->testAttribute(Qt::WA_SetPalette))
     widget->setPalette(QPalette());
-
-#if (QT_VERSION < QT_VERSION_CHECK(5,15,0))
-  if (itsWindowManager_)
-    itsWindowManager_->registerWidget(widget);
-#endif
 
   QWidget *pw = widget->parentWidget();
 
@@ -169,7 +97,7 @@ void Style::polish(QWidget *widget)
 
   /* respect the toolbar text color if the widget is shown after
      its parent toolbar and without repainting it (unlike in CE_ToolBar) */
-  const label_spec tLspec = getLabelSpec(QStringLiteral("Toolbar"));
+  const label_spec tLspec = getLabelSpec(KSL("Toolbar"));
   QColor tColor = getFromRGBA(tLspec.normalColor);
   if (enoughContrast(standardPalette().color(QPalette::Active,QPalette::Text), tColor)
       && !qobject_cast<QToolButton*>(widget) // flat toolbuttons are dealt with at CE_ToolButtonLabel
@@ -187,10 +115,6 @@ void Style::polish(QWidget *widget)
     disabledCol.setAlpha(102); // 0.4 * disabledCol.alpha()
     QColor ptColor = tColor; // placeholder
     ptColor.setAlpha(128);
-    opacifyColor(ptColor);
-    opacifyColor(tColor);
-    opacifyColor(inactiveCol);
-    opacifyColor(disabledCol);
 
     if (isStylableToolbar(pw)) // an immediate child of a stylable toolbar
     {
@@ -215,8 +139,8 @@ void Style::polish(QWidget *widget)
 
     if (qobject_cast<QLineEdit*>(widget))
     {
-      if (!getFrameSpec(QStringLiteral("ToolbarLineEdit")).element.isEmpty()
-          || !getInteriorSpec(QStringLiteral("ToolbarLineEdit")).element.isEmpty())
+      if (!getFrameSpec(KSL("ToolbarLineEdit")).element.isEmpty()
+          || !getInteriorSpec(KSL("ToolbarLineEdit")).element.isEmpty())
       {
         QPalette palette = widget->palette();
         if (palette.color(QPalette::Active, QPalette::Text) != tColor)
@@ -227,22 +151,20 @@ void Style::polish(QWidget *widget)
           palette.setColor(QPalette::PlaceholderText, ptColor);
           forcePalette(widget, palette);
           /* also correct the color of the symbolic clear icon */
-          if (QAction *clearAction = widget->findChild<QAction*>(QLatin1String("_q_qlineeditclearaction")))
+          if (QAction *clearAction = widget->findChild<QAction*>(KL1("_q_qlineeditclearaction")))
             clearAction->setIcon(standardIcon(QStyle::SP_LineEditClearButton, nullptr, widget));
         }
       }
     }
     else if (qobject_cast<QComboBox*>(widget)
-            && (!getFrameSpec(QStringLiteral("ToolbarComboBox")).element.isEmpty()
-                || !getInteriorSpec(QStringLiteral("ToolbarComboBox")).element.isEmpty()))
+            && (!getFrameSpec(KSL("ToolbarComboBox")).element.isEmpty()
+                || !getInteriorSpec(KSL("ToolbarComboBox")).element.isEmpty()))
     {
-      tColor = getFromRGBA(getLabelSpec(QStringLiteral("ToolbarComboBox")).normalColor);
+      tColor = getFromRGBA(getLabelSpec(KSL("ToolbarComboBox")).normalColor);
       if (tColor.isValid())
       {
         QColor disabledCol = tColor;
-        disabledCol.setAlpha(102);
-        opacifyColor(tColor);
-        opacifyColor(disabledCol);
+        disabledCol.setAlpha(102); // 0.4 * disabledCol.alpha()
         QPalette palette = widget->palette();
         if (tColor != palette.color(QPalette::ButtonText))
         {
@@ -259,11 +181,11 @@ void Style::polish(QWidget *widget)
     { // on toolbars, labels get the button text color; that's corrected here
       QPalette palette = widget->palette();
       palette.setColor(QPalette::Active, QPalette::ButtonText,
-                      standardPalette().color(QPalette::Active,QPalette::WindowText));
+                       standardPalette().color(QPalette::Active,QPalette::WindowText));
       palette.setColor(QPalette::Inactive, QPalette::ButtonText,
-                      standardPalette().color(QPalette::Inactive,QPalette::WindowText));
+                       standardPalette().color(QPalette::Inactive,QPalette::WindowText));
       palette.setColor(QPalette::Disabled, QPalette::ButtonText,
-                      standardPalette().color(QPalette::Disabled,QPalette::WindowText));
+                       standardPalette().color(QPalette::Disabled,QPalette::WindowText));
       forcePalette(widget, palette);
       respectDarkness = false;
     }
@@ -271,10 +193,9 @@ void Style::polish(QWidget *widget)
     {
       /* The label may be shown after its parent menu is polished below, in
          "switch (widget->windowFlags()...)". Other widgets are ignored for now. */
-      QColor menuTextColor = getFromRGBA(getLabelSpec(QStringLiteral("MenuItem")).normalColor);
+      QColor menuTextColor = getFromRGBA(getLabelSpec(KSL("MenuItem")).normalColor);
       if (menuTextColor.isValid())
       {
-        opacifyColor(menuTextColor);
         if (menuTextColor != standardPalette().color(QPalette::Active,QPalette::WindowText))
         {
           QPalette palette = widget->palette();
@@ -295,7 +216,7 @@ void Style::polish(QWidget *widget)
         && !widget->inherits("QTextEdit") && !widget->inherits("QPlainTextEdit"))
     {
       bool changePalette(false);
-      if (qobject_cast<QAbstractItemView*>(widget) || qobject_cast<QAbstractScrollArea*>(widget))
+      if (qobject_cast<QAbstractScrollArea*>(widget))
       { // we don't want to give a solid backgeound to LXQt's desktop by accident
         QWidget *win = widget->window();
         if (!win->testAttribute(Qt::WA_X11NetWmWindowTypeDesktop)
@@ -316,7 +237,9 @@ void Style::polish(QWidget *widget)
         if (!enoughContrast(palette.color(QPalette::Base), txtCol)
             || !enoughContrast(palette.color(QPalette::Window), palette.color(QPalette::WindowText))
             || (qobject_cast<QAbstractItemView*>(widget)
-                && !enoughContrast(palette.color(QPalette::AlternateBase), txtCol)))
+                && !enoughContrast(overlayColor(palette.color(QPalette::Base),
+                                                palette.color(QPalette::AlternateBase)),
+                                   txtCol)))
         {
           polish(palette);
           forcePalette(widget, palette);
@@ -331,10 +254,8 @@ void Style::polish(QWidget *widget)
     case Qt::Popup:
     case Qt::ToolTip: // a window, not a real tooltip
     case Qt::Sheet: { // WARNING: What the hell?! On Linux? Yes, a Qt5 bug!
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
       if (itsWindowManager_)
         itsWindowManager_->registerWidget(widget);
-#endif
       QRegion wMask = widget->mask();
       if (!wMask.isEmpty() && wMask != QRegion(widget->rect()))
         break; // like Vokoscreen's QvkAnimateWindow
@@ -343,11 +264,10 @@ void Style::polish(QWidget *widget)
          and a window can have the ToolTip flag (-> LXQtGroupPopup) */
       if (qobject_cast<QMenu*>(widget))
       { // some apps (like QtAV Player) do weird things with menus
-        QColor menuTextColor = getFromRGBA(getLabelSpec(QStringLiteral("MenuItem")).normalColor);
+        QColor menuTextColor = getFromRGBA(getLabelSpec(KSL("MenuItem")).normalColor);
         if (menuTextColor.isValid())
         {
           QPalette palette = widget->palette();
-          opacifyColor(menuTextColor);
           if (menuTextColor != palette.color(QPalette::WindowText))
           {
             palette.setColor(QPalette::Active,QPalette::WindowText,menuTextColor);
@@ -384,7 +304,7 @@ void Style::polish(QWidget *widget)
       }
       widget->setAttribute(Qt::WA_StyledBackground);
       /* take all precautions */
-      if (!isPlasma_ && !subApp_ && !isLibreoffice_
+      if (!isPlasma_ && !subApp_ /*&& !isLibreoffice_*/
           && widget->isWindow()
           && widget->windowType() != Qt::Desktop
           && !widget->testAttribute(Qt::WA_PaintOnScreen)
@@ -431,26 +351,21 @@ void Style::polish(QWidget *widget)
               hasForcedTranslucency = true;
             }
             /* WARNING:
-               Unlike most Qt5 windows, there are some opaque ones
+               Unlike most Qt>=5 windows, there are some opaque ones
                that are polished BEFORE being created (as in Octopi).
                Also the theme may change from Kvantum and to it again. */
             else if (!isOpaque_ && tspec_now.translucent_windows)
             {
-#if (QT_VERSION < QT_VERSION_CHECK(5,13,1))
-              if (!widget->testAttribute(Qt::WA_TranslucentBackground)
-                  && !widget->testAttribute(Qt::WA_NoSystemBackground))
-#else
               if (!widget->testAttribute(Qt::WA_TranslucentBackground)
                   || !widget->testAttribute(Qt::WA_NoSystemBackground))
-#endif
               {
                 makeTranslucent = true;
               }
-              if (makeTranslucent)
+              if (makeTranslucent && (!isKvM_ || tspec_.isX11))
               {
-                /* a Qt5 window couldn't be made translucent if it's
+                /* a Qt>=5 window could not be made translucent if it is
                    already created without the alpha channel of its
-                   surface format being set (as in Spectacle) */
+                   surface format being set (as in the old Spectacle) */
                 if (widget->testAttribute(Qt::WA_WState_Created))
                 {
                   if (QWindow *window = widget->windowHandle())
@@ -469,25 +384,18 @@ void Style::polish(QWidget *widget)
           {
             forcedTranslucency_.remove(widget);
             widget->setAttribute(Qt::WA_NoSystemBackground, false);
-#if (QT_VERSION < QT_VERSION_CHECK(5,13,1))
-            widget->setAttribute(Qt::WA_TranslucentBackground, false);
-#endif
             break;
           }
           if (makeTranslucent
-              /* enable blurring for hard-coded translucency */
-              || (tspec_now.composite
+              /* enable blurring for hard-coded window translucency,
+                 but exclude the opaque list */
+              || (!isOpaque_ && tspec_now.composite
                   && (hspec_.blur_translucent
-                      /* let unusual tooltips with hard-coded translucency
-                         have shadow (like in LXQtGroupPopup or KDE system settings) */
+                      /* include unusual tooltips with hard-coded translucency (like in
+                         LXQtGroupPopup or KDE system settings) into translucentWidgets_ */
                       || (widget->windowFlags() & Qt::WindowType_Mask) == Qt::ToolTip)
                   && widget->testAttribute(Qt::WA_TranslucentBackground)))
           {
-#if (QT_VERSION < QT_VERSION_CHECK(5,13,1))
-            if (!widget->testAttribute(Qt::WA_TranslucentBackground))
-            {
-              widget->setAttribute(Qt::WA_TranslucentBackground);
-#else
             if (!widget->testAttribute(Qt::WA_TranslucentBackground)
                 || (makeTranslucent && !widget->testAttribute(Qt::WA_NoSystemBackground)))
             {
@@ -495,26 +403,27 @@ void Style::polish(QWidget *widget)
                 widget->setAttribute(Qt::WA_TranslucentBackground);
               else
                 widget->setAttribute(Qt::WA_NoSystemBackground);
-#endif
               forcedTranslucency_.insert(widget); // needed in unpolish()
             }
 
             /* enable blurring */
-            if (!makeTranslucent || tspec_now.blurring)
+            if (makeTranslucent ? tspec_now.blurring : hspec_.blur_translucent)
             {
               if (blurHelper_ == nullptr)
               {
                 if (tspec_now.menu_shadow_depth > 0)
-                  getShadow(QStringLiteral("Menu"), getMenuMargin(true), getMenuMargin(false));
+                  getShadow(KSL("Menu"), getMenuMargin(true), getMenuMargin(false));
                 if (tspec_now.tooltip_shadow_depth > 0)
                 {
-                  const frame_spec fspec = getFrameSpec(QStringLiteral("ToolTip"));
+                  const frame_spec fspec = getFrameSpec(KSL("ToolTip"));
                   int thickness = qMax(qMax(fspec.top,fspec.bottom), qMax(fspec.left,fspec.right));
                   thickness += tspec_now.tooltip_shadow_depth;
-                  getShadow(QStringLiteral("ToolTip"), thickness);
+                  getShadow(KSL("ToolTip"), thickness);
                 }
                 blurHelper_ = new BlurHelper(this, menuShadow_, tooltipShadow_,
-                                             tspec_.contrast, tspec_.intensity, tspec_.saturation);
+                                             tspec_.menu_blur_radius, tspec_.tooltip_blur_radius,
+                                             tspec_.contrast, tspec_.intensity, tspec_.saturation,
+                                             hspec_.blur_only_active_window);
               }
               if (blurHelper_)
                 blurHelper_->registerWidget(widget);
@@ -528,9 +437,6 @@ void Style::polish(QWidget *widget)
           }
         }
       }
-
-      if (gtkDesktop_) // under gtk DEs, set the titlebar according to dark_titlebar
-        widget->installEventFilter(this);
 
       break;
     }
@@ -560,7 +466,8 @@ void Style::polish(QWidget *widget)
     QWidget *gp = getParent(widget,2);
     if ((hspec_.transparent_pcmanfm_view
          && widget->autoFillBackground()
-         && (gp && gp->inherits("Fm::FolderView") && !gp->inherits("PCManFM::DesktopWindow")))
+         && (gp && gp->inherits("Fm::FolderView") && !gp->inherits("PCManFM::DesktopWindow")
+             && qobject_cast<QMainWindow*>(gp->window())))
         || (hspec_.transparent_pcmanfm_sidepane
             && ((pw && pw->inherits("Fm::DirTreeView"))
                 || (gp && gp->inherits("Fm::SidePane")))))
@@ -629,8 +536,8 @@ void Style::polish(QWidget *widget)
   else if (qobject_cast<QLineEdit*>(widget) || widget->inherits("KCalcDisplay"))
   {
     if (qobject_cast<QLineEdit*>(widget)
-        && (!getFrameSpec(QStringLiteral("ToolbarLineEdit")).element.isEmpty()
-            || !getInteriorSpec(QStringLiteral("ToolbarLineEdit")).element.isEmpty())
+        && (!getFrameSpec(KSL("ToolbarLineEdit")).element.isEmpty()
+            || !getInteriorSpec(KSL("ToolbarLineEdit")).element.isEmpty())
         && getStylableToolbarContainer(widget, true))
     {
       if (!tspec_.animate_states)
@@ -653,24 +560,53 @@ void Style::polish(QWidget *widget)
       }
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6,8,2))
+    if (QLineEdit *le = qobject_cast<QLineEdit*>(widget))
+    {
+      if (le->style()->inherits("QStyleSheetStyle")
+          && !le->testAttribute(Qt::WA_StyleSheetTarget)
+          && !le->hasFrame())
+      {
+        /* Due to a regression in Qt 6.8.2, frameless lineedits are drawn by QStyleSheetStyle
+           in this case. As Kvantum always draws frames for lineedits, this is a workaround. */
+        le->setFrame(true);
+      }
+      if (tspec_.animate_states)
+        widget->installEventFilter(this);
+    }
+#else
     if (qobject_cast<QLineEdit*>(widget)
         && (tspec_.animate_states
             /* a workaround for bad codes that change line-edit base color */
-            || (!isPcmanfm_ && (tspec_.combo_as_lineedit || tspec_.square_combo_button)
-                && qobject_cast<QComboBox*>(pw))))
+            /*|| (!isPcmanfm_ && (tspec_.combo_as_lineedit || tspec_.square_combo_button)
+                && qobject_cast<QComboBox*>(pw))*/))
     {
       widget->installEventFilter(this);
     }
+#endif
   }
   else if (qobject_cast<QComboBox*>(widget)
            || qobject_cast<QSlider*>(widget))
   {
     widget->setAttribute(Qt::WA_Hover, true);
+    bool filterInstalled(false);
     if (tspec_.animate_states)
+    {
       widget->installEventFilter(this);
+      filterInstalled = true;
+    }
     /* set an appropriate vertical margin for combo popup items */
     if (QComboBox *combo = qobject_cast<QComboBox*>(widget))
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(6,8,2))
+      if (!filterInstalled
+          && combo->style()->inherits("QStyleSheetStyle")
+          && !combo->testAttribute(Qt::WA_StyleSheetTarget))
+      {
+        widget->installEventFilter(this); // see eventFilter() -> QEvent::Paint
+        filterInstalled = true;
+      }
+#endif
       if(!hasParent(widget, "QWebView"))
       {
         QAbstractItemView *itemView(combo->view());
@@ -683,7 +619,7 @@ void Style::polish(QWidget *widget)
             bool baseContrast(false);
             if (itemView->viewport()->findChildren<QWidget*>(QString(), Qt::FindDirectChildrenOnly).isEmpty())
             { // font menus use the palette text color, so we set it to the menu text color when needed
-              menuTextColor = getFromRGBA(getLabelSpec(QStringLiteral("MenuItem")).normalColor);
+              menuTextColor = getFromRGBA(getLabelSpec(KSL("MenuItem")).normalColor);
               baseContrast = enoughContrast(vPalette.color(QPalette::Text), menuTextColor);
             }
 
@@ -692,11 +628,11 @@ void Style::polish(QWidget *widget)
               QString ss;
               if (baseContrast)
               {
-                ss = QStringLiteral("QAbstractItemView{background-color: transparent; color: %1}")
-                     .arg(getLabelSpec(QStringLiteral("MenuItem")).normalColor);
+                ss = KSL("QAbstractItemView{background-color: transparent; color: %1}")
+                     .arg(getLabelSpec(KSL("MenuItem")).normalColor);
               }
               else
-                ss = QStringLiteral("QAbstractItemView{background-color: transparent;}");
+                ss = KSL("QAbstractItemView{background-color: transparent;}");
               itemView->setStyleSheet(ss);
             }
 
@@ -707,7 +643,6 @@ void Style::polish(QWidget *widget)
             itemView->viewport()->setAutoFillBackground(false);
             if (baseContrast)
             {
-              opacifyColor(menuTextColor);
               vPalette.setColor(QPalette::Text, menuTextColor);
               forcePalette(itemView->viewport(), vPalette);
             }
@@ -719,10 +654,10 @@ void Style::polish(QWidget *widget)
             QPalette palette = itemView->palette();
             if (palette.color(itemView->backgroundRole()) == QColor(Qt::transparent))
             {
-              if (itemView->styleSheet() == QStringLiteral("QAbstractItemView{background-color: transparent;}")
+              if (itemView->styleSheet() == KSL("QAbstractItemView{background-color: transparent;}")
                   || itemView->styleSheet()
-                       == QStringLiteral("QAbstractItemView{background-color: transparent; color: %1}")
-                          .arg(getLabelSpec(QStringLiteral("MenuItem")).normalColor))
+                       == KSL("QAbstractItemView{background-color: transparent; color: %1}")
+                          .arg(getLabelSpec(KSL("MenuItem")).normalColor))
               {
                 itemView->setStyleSheet(QString());
               }
@@ -772,7 +707,7 @@ void Style::polish(QWidget *widget)
               /* PM_FocusFrameVMargin is used for viewitems */
               itemView->setItemDelegate(new KvComboItemDelegate(pixelMetric(PM_FocusFrameVMargin),
                                                                 itemView));
-              if (!tspec_.animate_states) // see eventFilter() -> QEvent::StyleChange
+              if (!filterInstalled) // see eventFilter() -> QEvent::StyleChange
                 widget->installEventFilter(this);
             }
           }
@@ -841,7 +776,6 @@ void Style::polish(QWidget *widget)
   else if (QAbstractScrollArea *sa = qobject_cast<QAbstractScrollArea*>(widget))
   {
     QWidget *vp = sa->viewport();
-#if (QT_VERSION >= QT_VERSION_CHECK(5,13,1))
     if(hspec_.kinetic_scrolling
        && vp && !vp->testAttribute(Qt::WA_StyleSheetTarget) && !QScroller::hasScroller(vp)
        && !widget->autoFillBackground() && !widget->inherits("QComboBoxListView")
@@ -870,7 +804,6 @@ void Style::polish(QWidget *widget)
         QScroller::scroller(vp)->setScrollerProperties(sp);
       }
     }
-#endif
     if (/*sa->frameShape() == QFrame::NoFrame &&*/ // Krita and digiKam aren't happy with this
         sa->backgroundRole() == QPalette::Window
         || sa->backgroundRole() == QPalette::Button) // inside toolbox
@@ -893,8 +826,8 @@ void Style::polish(QWidget *widget)
       {
         // support animation only if the background is flat
         if ((tspec_.animate_states
-             && (!vp || vp->autoFillBackground()
-                 || (!vp->styleSheet().isEmpty() && vp->testAttribute(Qt::WA_StyleSheetTarget)))
+             && (sa->frameStyle() & QFrame::StyledPanel) // see Qt -> qabstractscrollarea.cpp
+             && vp && vp->autoFillBackground()
              && themeRndr_ && themeRndr_->isValid()) // the default SVG file doesn't have a focus state for frames
            || (hasInactiveSelItemCol_
                && qobject_cast<QAbstractItemView*>(widget))) // enforce the text color of inactive selected items
@@ -906,7 +839,7 @@ void Style::polish(QWidget *widget)
                                           && (!tspec_.combo_menu /*|| isLibreoffice_*/)))
             && vp && vp->autoFillBackground()
             && (!vp->testAttribute(Qt::WA_StyleSheetTarget)
-                || vp->styleSheet().isEmpty() || !vp->styleSheet().contains("background"))
+                || vp->styleSheet().isEmpty() || !vp->styleSheet().contains(KL1("background")))
             // but not when the combo popup is drawn as a menu
             && !(tspec_.combo_menu /*&& !isLibreoffice_*/ && widget->inherits("QComboBoxListView"))
             // also consider pcmanfm hacking keys
@@ -985,12 +918,30 @@ void Style::polish(QWidget *widget)
         if (mw->minimumSize() != mw->maximumSize())
         {
           QLayout *lo = mw->layout();
-          if (lo == nullptr || lo->sizeConstraint() != QLayout::SetFixedSize)
+          if (lo && lo->sizeConstraint() != QLayout::SetFixedSize)
             sb->setSizeGripEnabled(true);
         }
       }
     }
   }
+#if (QT_VERSION >= QT_VERSION_CHECK(6,8,2))
+  else if (!tspec_.animate_states && qobject_cast<QToolButton*>(widget))
+  {
+    if (widget->style()->inherits("QStyleSheetStyle")
+        && !widget->testAttribute(Qt::WA_StyleSheetTarget))
+    {
+      widget->installEventFilter(this); // see eventFilter() -> QEvent::Paint
+    }
+    else if (tspec_.group_toolbar_buttons)
+    {
+      if (QToolBar *toolBar = qobject_cast<QToolBar*>(pw))
+      {
+        if (toolBar->orientation() != Qt::Vertical)
+          widget->installEventFilter(this);
+      }
+    }
+  }
+#else
   // update grouped toolbar buttons when one of them is shown/hidden
   else if (!tspec_.animate_states // otherwise it already has event filter installed on it
            && tspec_.group_toolbar_buttons && qobject_cast<QToolButton*>(widget))
@@ -1001,16 +952,15 @@ void Style::polish(QWidget *widget)
         widget->installEventFilter(this);
     }
   }
+#endif
 
   bool isMenuOrTooltip(!noComposite_
                        && !subApp_
                        && (qobject_cast<QMenu*>(widget)
                            /* no shadow for tooltips that are already translucent */
-                           || (widget->inherits("QTipLabel") && !isLibreoffice_
+                           || (widget->inherits("QTipLabel") /*&& !isLibreoffice_*/
                                && (!widget->testAttribute(Qt::WA_TranslucentBackground)
-#if (QT_VERSION >= QT_VERSION_CHECK(5,13,1))
                                    || !widget->testAttribute(Qt::WA_NoSystemBackground)
-#endif
                                    || forcedTranslucency_.contains(widget)))));
   if ((isMenuOrTooltip
           /* because of combo menus or round corners */
@@ -1021,7 +971,7 @@ void Style::polish(QWidget *widget)
     if (tspec_now.composite)
     {
       if (tspec_now.menu_shadow_depth > 0)
-        getShadow(QStringLiteral("Menu"), getMenuMargin(true), getMenuMargin(false));
+        getShadow(KSL("Menu"), getMenuMargin(true), getMenuMargin(false));
       if (qobject_cast<QMenu*>(widget))
       {
         /* On the one hand, RTL submenus aren't positioned correctly by Qt and, since
@@ -1031,11 +981,9 @@ void Style::polish(QWidget *widget)
       }
 
       if (!widget->testAttribute(Qt::WA_TranslucentBackground))
-        widget->setAttribute(Qt::WA_TranslucentBackground); // Qt5 may need this too
-#if (QT_VERSION >= QT_VERSION_CHECK(5,13,1))
+        widget->setAttribute(Qt::WA_TranslucentBackground); // Qt>=5 may need this too
       else if (!widget->testAttribute(Qt::WA_NoSystemBackground))
         widget->setAttribute(Qt::WA_NoSystemBackground);
-#endif
 
       translucentWidgets_.insert(widget);
       connect(widget, &QObject::destroyed, this, &Style::noTranslucency);
@@ -1046,13 +994,15 @@ void Style::polish(QWidget *widget)
         {
           if (tspec_now.tooltip_shadow_depth > 0)
           {
-            const frame_spec fspec = getFrameSpec(QStringLiteral("ToolTip"));
+            const frame_spec fspec = getFrameSpec(KSL("ToolTip"));
             int thickness = qMax(qMax(fspec.top,fspec.bottom), qMax(fspec.left,fspec.right));
             thickness += tspec_now.tooltip_shadow_depth;
-            getShadow(QStringLiteral("ToolTip"), thickness);
+            getShadow(KSL("ToolTip"), thickness);
           }
           blurHelper_ = new BlurHelper(this, menuShadow_, tooltipShadow_,
-                                       tspec_.contrast, tspec_.intensity, tspec_.saturation);
+                                       tspec_.menu_blur_radius, tspec_.tooltip_blur_radius,
+                                       tspec_.contrast, tspec_.intensity, tspec_.saturation,
+                                       hspec_.blur_only_active_window);
         }
         /* blurHelper_ may exist because of blurring hard-coded translucency */
         if (blurHelper_ && tspec_now.popup_blurring)
@@ -1060,7 +1010,7 @@ void Style::polish(QWidget *widget)
       }
     }
     else if (qobject_cast<QMenu*>(widget)) // for menubars and submenus (eventFilter -> case QEvent::Show)
-        widget->installEventFilter(this);
+      widget->installEventFilter(this);
   }
 }
 
@@ -1075,6 +1025,10 @@ void Style::polish(QApplication *app)
     isPcmanfm_ = true;
   else if (appName == "soffice.bin")
     isLibreoffice_ = true;
+  else if (appName == "krita")
+    isKrita_ = true;
+  else if (appName == "kvantummanager" || appName == "Kvantum Manager")
+    isKvM_ = true;
   else if (appName == "plasma" || appName.startsWith("plasma-")
            || appName == "plasmashell" // Plasma5
            || appName == "kded4") // this is for the infamous appmenu
@@ -1083,10 +1037,7 @@ void Style::polish(QApplication *app)
   if (tspec_.opaque.contains(appName, Qt::CaseInsensitive))
     isOpaque_ = true;
 
-  /* general colors
-     FIXME Is this needed? Can't polish(QPalette&) alone do the job?
-     The documentation for QApplication::setPalette() is ambiguous
-     but, at least outside KDE and with Qt4, it was sometimes needed. */
+  /* force our palette */
   QPalette palette = app->palette();
   polish(palette);
   app->setPalette(palette);
@@ -1094,9 +1045,6 @@ void Style::polish(QApplication *app)
   QCommonStyle::polish(app);
   if (itsShortcutHandler_)
     app->installEventFilter(itsShortcutHandler_);
-
-  if (gtkDesktop_) // under gtk DEs, always use their font
-    setAppFont();
 }
 
 void Style::polish(QPalette &palette)
@@ -1108,10 +1056,6 @@ void Style::unpolish(QWidget *widget)
 {
   if (widget)
   {
-#if (QT_VERSION < QT_VERSION_CHECK(5,15,0))
-    if (itsWindowManager_)
-      itsWindowManager_->unregisterWidget(widget);
-#endif
 
     /*widget->setAttribute(Qt::WA_Hover, false);*/
 
@@ -1121,10 +1065,8 @@ void Style::unpolish(QWidget *widget)
       case Qt::Popup:
       case Qt::ToolTip:
       case Qt::Sheet: {
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
         if (itsWindowManager_)
           itsWindowManager_->unregisterWidget(widget);
-#endif
         if (qobject_cast<QMenu*>(widget)
             || widget->inherits("QTipLabel")
             || qobject_cast<QLabel*>(widget))
@@ -1142,14 +1084,7 @@ void Style::unpolish(QWidget *widget)
         {
           widget->removeEventFilter(this);
           widget->setAttribute(Qt::WA_NoSystemBackground, false);
-          /* see unpolish(QApplication*) below for why we don't set
-             WA_TranslucentBackground to false for Qt >= 5.13.1 */
-#if (QT_VERSION < QT_VERSION_CHECK(5,13,1))
-          widget->setAttribute(Qt::WA_TranslucentBackground, false);
-#endif
         }
-        if (gtkDesktop_)
-          widget->removeEventFilter(this);
         widget->setAttribute(Qt::WA_StyledBackground, false); // FIXME is this needed?
         /* this is needed with tranlucent windows when
            the theme is changed from Kvantum and to it again */
@@ -1188,7 +1123,6 @@ void Style::unpolish(QWidget *widget)
     else if (qobject_cast<QToolBox*>(widget))
       widget->setBackgroundRole(QPalette::Button);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5,13,1))
     if (hspec_.kinetic_scrolling)
     {
       if (QAbstractScrollArea *sa = qobject_cast<QAbstractScrollArea*>(widget))
@@ -1203,7 +1137,6 @@ void Style::unpolish(QWidget *widget)
         }
       }
     }
-#endif
 
     if (qobject_cast<QMenu*>(widget) || widget->inherits("QTipLabel"))
     {
@@ -1215,9 +1148,6 @@ void Style::unpolish(QWidget *widget)
       {
         widget->setAttribute(Qt::WA_PaintOnScreen, false);
         widget->setAttribute(Qt::WA_NoSystemBackground, false);
-#if (QT_VERSION < QT_VERSION_CHECK(5,13,1))
-        widget->setAttribute(Qt::WA_TranslucentBackground, false);
-#endif
         /* menus may be cached, so that if not removed from the list,
            they might lack translucency the next time they appear */
         translucentWidgets_.remove(widget);
@@ -1240,12 +1170,7 @@ void Style::unpolish(QApplication *app)
   while (i.hasNext())
   {
     if (QWidget *w = i.next())
-    {
       w->setAttribute(Qt::WA_NoSystemBackground, false);
-#if (QT_VERSION < QT_VERSION_CHECK(5,13,1))
-      w->setAttribute(Qt::WA_TranslucentBackground, false);
-#endif
-    }
   }
   forcedTranslucency_.clear();
   translucentWidgets_.clear();
@@ -1397,27 +1322,11 @@ QPalette Style::standardPalette() const
   {
     QColor placeholderTextColor = col;
     placeholderTextColor.setAlpha(128);
-    if (hspec_.opaque_colors)
-    { // if opaqueness is forced, apply it over the base color
-      QColor baseCol = standardPalette_.color(QPalette::Active,QPalette::Base);
-      baseCol.setAlpha(255);
-      if (col.alpha() < 255)
-        col = overlayColor(baseCol,col);
-      placeholderTextColor = overlayColor(baseCol,placeholderTextColor);
-    }
     standardPalette_.setColor(QPalette::Active,QPalette::Text,col);
     standardPalette_.setColor(QPalette::PlaceholderText,placeholderTextColor);
     col1 = getFromRGBA(cspec_.inactiveTextColor);
     if (col1.isValid() && hasInactiveness)
-    {
-      if (hspec_.opaque_colors && col1.alpha() < 255)
-      {
-        QColor baseCol = standardPalette_.color(QPalette::Inactive,QPalette::Base);
-        baseCol.setAlpha(255);
-        col1 = overlayColor(baseCol,col1);
-      }
       standardPalette_.setColor(QPalette::Inactive,QPalette::Text,col1);
-    }
     else
       standardPalette_.setColor(QPalette::Inactive,QPalette::Text,col);
   }
@@ -1425,24 +1334,10 @@ QPalette Style::standardPalette() const
   col = getFromRGBA(cspec_.windowTextColor);
   if (col.isValid())
   {
-    if (hspec_.opaque_colors && col.alpha() < 255)
-    { // if opaqueness is forced, apply it over the window color
-      QColor winCol = standardPalette_.color(QPalette::Active,QPalette::Window);
-      winCol.setAlpha(255);
-      col = overlayColor(winCol,col);
-    }
     standardPalette_.setColor(QPalette::Active,QPalette::WindowText,col);
     col1 = getFromRGBA(cspec_.inactiveWindowTextColor);
     if (col1.isValid() && hasInactiveness)
-    {
-      if (hspec_.opaque_colors && col1.alpha() < 255)
-      {
-        QColor winCol = standardPalette_.color(QPalette::Inactive,QPalette::Window);
-        winCol.setAlpha(255);
-        col1 = overlayColor(winCol,col1);
-      }
       standardPalette_.setColor(QPalette::Inactive,QPalette::WindowText,col1);
-    }
     else
       standardPalette_.setColor(QPalette::Inactive,QPalette::WindowText,col);
   }
@@ -1450,51 +1345,39 @@ QPalette Style::standardPalette() const
   col = getFromRGBA(cspec_.buttonTextColor);
   if (col.isValid())
   {
-    opacifyColor(col);
     standardPalette_.setColor(QPalette::Active,QPalette::ButtonText,col);
     standardPalette_.setColor(QPalette::Inactive,QPalette::ButtonText,col);
   }
 
   col = getFromRGBA(cspec_.tooltipTextColor);
   if (col.isValid())
-  {
-    opacifyColor(col);
     standardPalette_.setColor(QPalette::ToolTipText,col);
-  }
 
   col = getFromRGBA(cspec_.highlightTextColor);
   if (col.isValid())
   {
-    opacifyColor(col);
     standardPalette_.setColor(QPalette::Active,QPalette::HighlightedText,col);
     col1 = getFromRGBA(cspec_.inactiveHighlightTextColor);
     if (col1.isValid() && hasInactiveness)
-    {
-      opacifyColor(col1);
       standardPalette_.setColor(QPalette::Inactive,QPalette::HighlightedText,col1);
-    }
     else
       standardPalette_.setColor(QPalette::Inactive,QPalette::HighlightedText,col);
+    /* also, derive the disabled highlighted text color */
+    col.setAlpha(102); // 0.4 * col.alpha()
+    standardPalette_.setColor(QPalette::Disabled,QPalette::HighlightedText,col);
   }
 
   col = getFromRGBA(cspec_.linkColor);
   if (col.isValid())
-  {
-    opacifyColor(col);
     standardPalette_.setColor(QPalette::Link,col);
-  }
   col = getFromRGBA(cspec_.linkVisitedColor);
   if (col.isValid())
-  {
-    opacifyColor(col);
     standardPalette_.setColor(QPalette::LinkVisited,col);
-  }
 
   /* disabled text */
   col = getFromRGBA(cspec_.disabledTextColor);
   if (col.isValid())
   {
-    opacifyColor(col);
     standardPalette_.setColor(QPalette::Disabled,QPalette::Text,col);
     standardPalette_.setColor(QPalette::Disabled,QPalette::WindowText,col);
     standardPalette_.setColor(QPalette::Disabled,QPalette::ButtonText,col);

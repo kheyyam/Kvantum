@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2019 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2014-2024 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -27,7 +27,8 @@ namespace Kvantum
 
 /* Here, instead of using the render() method of QSvgRenderer
    directly, we first make a QPixmap for drawing SVG elements. */
-static inline void drawSvgElement(QSvgRenderer *renderer, QPainter *painter, QRect bounds, QString element,
+static inline void drawSvgElement(QSvgRenderer *renderer, QPainter *painter,
+                                  const QRect &bounds, const QString &element,
                                   qreal pixelRatio)
 {
   QPixmap pixmap = QPixmap((QSizeF(bounds.size())*pixelRatio).toSize());
@@ -54,11 +55,11 @@ bool Style::renderElement(QPainter *painter,
 
   if (themeRndr_ && themeRndr_->isValid()
       && (themeRndr_->elementExists(_element)
-          || themeRndr_->elementExists(_element.remove("-inactive"))
+          || themeRndr_->elementExists(_element.remove(KL1("-inactive")))
           // fall back to the normal state if other states aren't found
-          || themeRndr_->elementExists(_element.replace("-toggled","-normal")
-                                               .replace("-pressed","-normal")
-                                               .replace("-focused","-normal"))))
+          || themeRndr_->elementExists(_element.replace(KL1("-toggled"),KL1("-normal"))
+                                               .replace(KL1("-pressed"),KL1("-normal"))
+                                               .replace(KL1("-focused"),KL1("-normal")))))
   {
     renderer = themeRndr_;
   }
@@ -67,20 +68,19 @@ bool Style::renderElement(QPainter *painter,
   else if (defaultRndr_ && defaultRndr_->isValid())
   {
     _element = element;
-    if (defaultRndr_->elementExists(_element.remove("-inactive"))
+    if (defaultRndr_->elementExists(_element.remove(KL1("-inactive")))
         // even the default theme may not have all states
-        || defaultRndr_->elementExists(_element.replace("-toggled","-normal")
-                                               .replace("-pressed","-normal")
-                                               .replace("-focused","-normal")))
+        || defaultRndr_->elementExists(_element.replace(KL1("-toggled"),KL1("-normal"))
+                                               .replace(KL1("-pressed"),KL1("-normal"))
+                                               .replace(KL1("-focused"),KL1("-normal"))))
     {
       renderer = defaultRndr_;
     }
   }
   if (!renderer) return false;
 
-  qreal pixelRatio = qApp->devicePixelRatio();
-  if (painter->device())
-    pixelRatio = painter->device()->devicePixelRatioF();
+  qreal pixelRatio = painter->device() ? painter->device()->devicePixelRatioF()
+                                       : qApp->devicePixelRatio();
   pixelRatio = qMax(pixelRatio, static_cast<qreal>(1));
   if (static_cast<qreal>(qRound(pixelRatio)) != pixelRatio)
   { // in this special case, we prevent one-pixel gaps between rectangles as far as possible
@@ -160,7 +160,7 @@ void Style::renderSliderTick(QPainter *painter,
                              bool above,
                              bool inverted) const
 {
-  if (!ticksRect.isValid())
+  if (!ticksRect.isValid() || interval < 1)
     return;
 
   QSvgRenderer *renderer = 0;
@@ -168,20 +168,18 @@ void Style::renderSliderTick(QPainter *painter,
 
   if (themeRndr_ && themeRndr_->isValid()
       && (themeRndr_->elementExists(_element)
-          || (_element.contains("-inactive")
-              && themeRndr_->elementExists(_element.remove("-inactive")))))
+          || (_element.contains(KL1("-inactive"))
+              && themeRndr_->elementExists(_element.remove(KL1("-inactive"))))))
   {
     renderer = themeRndr_;
   }
   else if (defaultRndr_ && defaultRndr_->isValid()
-           && defaultRndr_->elementExists(_element.remove("-inactive")))
+           && defaultRndr_->elementExists(_element.remove(KL1("-inactive"))))
   {
     renderer = defaultRndr_;
   }
   else
     return;
-
-  if (interval < 1) return;
 
   int thickness = 1;
   int len = pixelMetric(PM_SliderLength);
@@ -238,7 +236,7 @@ void Style::renderFrame(QPainter *painter,
 
   bool isInactive(false);
   QString state;
-  QStringList list = element.split(QStringLiteral("-"));
+  QStringList list = element.split(KSL("-"));
   int count = list.count();
   if (count > 2 && list.at(count - 1) == "inactive")
   {
@@ -248,7 +246,7 @@ void Style::renderFrame(QPainter *painter,
   else if (count > 1)
   {
     state = "-" + list.at(count - 1);
-    static const QStringList states = {QStringLiteral("-normal"), QStringLiteral("-focused"), QStringLiteral("-pressed"), QStringLiteral("-toggled"), QStringLiteral("-disabled")}; // the disabled state is for CE_ProgressBarContents
+    static const QStringList states = {KSL("-normal"), KSL("-focused"), KSL("-pressed"), KSL("-toggled"), KSL("-disabled")}; // the disabled state is for CE_ProgressBarContents
     if (!states.contains(state))
       state = QString();
   }
@@ -263,9 +261,9 @@ void Style::renderFrame(QPainter *painter,
     if (isInactive)
       realElement += "-inactive";
   }
-  else if (element.endsWith("-default")) // default button
+  else if (element.endsWith(KL1("-default"))) // default button
     realElement += "-default";
-  else if (element.endsWith("-focus")) // focus element
+  else if (element.endsWith(KL1("-focus"))) // focus element
     realElement += "-focus";
 
   QString element1(realElement); // the element that will be drawn
@@ -284,10 +282,10 @@ void Style::renderFrame(QPainter *painter,
   if (fspec.expansion > 0
       && ((e <= fspec.expansion && (isHAttached ? 2*w >= h : (!grouped || w >= h)))
           || (themeRndr_ && themeRndr_->isValid()
-              && (themeRndr_->elementExists(element0.remove("-inactive"))
+              && (themeRndr_->elementExists(element0.remove(KL1("-inactive")))
                   // fall back to the normal state
                   || (!state.isEmpty()
-                      && themeRndr_->elementExists(element0.replace(state,"-normal")))))))
+                      && themeRndr_->elementExists(element0.replace(state,KL1("-normal"))))))))
   {
     drawExpanded = true; // can change below
   }
@@ -307,8 +305,9 @@ void Style::renderFrame(QPainter *painter,
     /* find the element that should be drawn (element1) */
     element0 = "border-"+realElement;
     if (drawBorder && themeRndr_ && themeRndr_->isValid()
-        && (themeRndr_->elementExists(element0.remove("-inactive")+"-top")
-            || (!state.isEmpty() && themeRndr_->elementExists(element0.replace(state,"-normal")+"-top"))))
+        && (themeRndr_->elementExists(element0.remove(KL1("-inactive")) + KL1("-top"))
+            || (!state.isEmpty() && themeRndr_->elementExists(element0.replace(state,KL1("-normal"))
+                                                              + KL1("-top")))))
     {
       element1 = element0;
       if (isInactive)
@@ -318,8 +317,9 @@ void Style::renderFrame(QPainter *painter,
     {
       element0 = "expand-"+realElement;
       if (themeRndr_ && themeRndr_->isValid()
-          && (themeRndr_->elementExists(element0.remove("-inactive")+"-top")
-              || (!state.isEmpty() && themeRndr_->elementExists(element0.replace(state,"-normal")+"-top"))))
+          && (themeRndr_->elementExists(element0.remove(KL1("-inactive")) + KL1("-top"))
+              || (!state.isEmpty() && themeRndr_->elementExists(element0.replace(state,KL1("-normal"))
+                                                                + KL1("-top")))))
       {
         element1 = element0;
         if (isInactive)
@@ -792,14 +792,14 @@ bool Style::renderInterior(QPainter *painter,
       frameElement = fspec.element;
     QString element0(element);
     /* the interior used for partial frame expansion has the frame name */
-    element0 = element0.remove("-inactive").replace(ispec.element, frameElement);
+    element0 = element0.remove(KL1("-inactive")).replace(ispec.element, frameElement);
     element0 = "expand-"+element0;
     if (((e <= fspec.expansion && (isHAttached ? 2*w >= h : (!grouped || w >= h)))
          || (themeRndr_ && themeRndr_->isValid()
              && (themeRndr_->elementExists(element0)
-                 || themeRndr_->elementExists(element0.replace("-toggled","-normal")
-                                                      .replace("-pressed","-normal")
-                                                      .replace("-focused","-normal")))))
+                 || themeRndr_->elementExists(element0.replace(KL1("-toggled"),KL1("-normal"))
+                                                      .replace(KL1("-pressed"),KL1("-normal"))
+                                                      .replace(KL1("-focused"),KL1("-normal"))))))
         && (!fspec.isAttached || fspec.VPos == 2)
         && (h <= 2*w || (fspec.HPos != 1 && fspec.HPos != -1)
             || fspec.expansion < 2*qMin(h,w)))
@@ -1092,11 +1092,8 @@ void Style::renderLabel(
           painter->save();
           if (lspec.a < 255)
             shadowColor.setAlpha(lspec.a);
-          //if (hspec_.opaque_colors)
-          //{
-            painter->setOpacity(shadowColor.alphaF());
-            shadowColor.setAlpha(255);
-          //}
+          painter->setOpacity(shadowColor.alphaF());
+          shadowColor.setAlpha(255);
           painter->setPen(shadowColor);
           for (int i=0; i<lspec.depth; i++)
           {
@@ -1110,11 +1107,8 @@ void Style::renderLabel(
       }
 
       painter->save();
-      //if (hspec_.opaque_colors)
-      //{
-        painter->setOpacity(txtCol.alphaF());
-        txtCol.setAlpha(255);
-      //}
+      painter->setOpacity(txtCol.alphaF());
+      txtCol.setAlpha(255);
       painter->setPen(txtCol);
       painter->drawText(rtext,talign,text);
       painter->restore();
@@ -1136,11 +1130,8 @@ void Style::renderLabel(
     {
       painter->save();
       normalColor.setAlpha(102); // 0.4 * normalColor.alpha()
-      //if (hspec_.opaque_colors)
-      //{
-        painter->setOpacity(normalColor.alphaF());
-        normalColor.setAlpha(255);
-      //}
+      painter->setOpacity(normalColor.alphaF());
+      normalColor.setAlpha(255);
       painter->setPen(normalColor);
       painter->drawText(rtext,talign,text);
       painter->restore();

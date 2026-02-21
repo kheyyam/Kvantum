@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Pedram Pourang (aka Tsu Jan) 2018-2020 <tsujan2000@gmail.com>
+ * Copyright (C) Pedram Pourang (aka Tsu Jan) 2018-2025 <tsujan2000@gmail.com>
  *
  * Kvantum is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -27,7 +27,7 @@
 int main (int argc, char *argv[])
 {
     const QString name = "Kvantum Manager";
-    const QString version = "0.20.0";
+    const QString version = "1.1.6";
 
     QStringList options;
     for (int i = 1; i < argc; ++i)
@@ -52,22 +52,14 @@ int main (int argc, char *argv[])
                    "NOTE3: Please close the GUI of Kvantum Manager\n"\
                    "       while using command-line options because\n"\
                    "       it will not be updated automatically!"
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
                 << Qt::endl;
-#else
-                << endl;
-#endif
             return 0;
         }
         if (options.at (0) == "--version" || options.at (0) == "-v")
         {
             QTextStream out (stdout);
             out << name << " " << version
-#if (QT_VERSION >= QT_VERSION_CHECK(5,15,0))
                 << Qt::endl;
-#else
-                << endl;
-#endif
             return 0;
         }
     }
@@ -103,27 +95,13 @@ int main (int argc, char *argv[])
         }
     }
 
-    a.setAttribute (Qt::AA_UseHighDpiPixmaps, true);
-
-    QStringList langs (QLocale::system().uiLanguages());
-    QString lang; // bcp47Name() doesn't work under vbox
-    if (!langs.isEmpty())
-        lang = langs.first().replace ('-', '_');
-
     QTranslator qtTranslator;
-    if (!qtTranslator.load ("qt_" + lang, QLibraryInfo::location (QLibraryInfo::TranslationsPath)))
-    { // shouldn't be needed
-        if (!langs.isEmpty())
-        {
-            lang = langs.first().split (QLatin1Char ('_')).first();
-            qtTranslator.load ("qt_" + lang, QLibraryInfo::location (QLibraryInfo::TranslationsPath));
-        }
-    }
-    a.installTranslator (&qtTranslator);
+    if (qtTranslator.load ("qt_" + QLocale::system().name(), QLibraryInfo::path (QLibraryInfo::TranslationsPath)))
+        a.installTranslator (&qtTranslator);
 
     QTranslator KMTranslator;
-    KMTranslator.load ("kvantummanager_" + lang, QStringLiteral (DATADIR) + "/kvantummanager/translations");
-    a.installTranslator (&KMTranslator);
+    if (KMTranslator.load ("kvantummanager_" + QLocale::system().name(), QStringLiteral (DATADIR) + "/kvantummanager/translations"))
+        a.installTranslator (&KMTranslator);
 
     /* for Kvantum Manager to do its job, it should by styled by Kvantum */
     a.setAttribute (Qt::AA_DontCreateNativeWidgetSiblings, true); // for translucency
@@ -139,8 +117,7 @@ int main (int argc, char *argv[])
     }
     if (QApplication::style()->objectName() != "kvantum")
         QApplication::setStyle (QStyleFactory::create ("kvantum"));
-    KvManager::KvantumManager km (lang, nullptr);
-    km.showWindow();
+    KvManager::KvantumManager km (nullptr);
 
     return a.exec();
 }

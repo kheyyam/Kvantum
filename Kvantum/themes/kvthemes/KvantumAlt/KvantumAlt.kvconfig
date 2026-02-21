@@ -11,8 +11,10 @@ group_toolbar_buttons=false
 toolbar_interior_spacing=1
 composite=true
 menu_shadow_depth=6
+menu_blur_radius=2
 spread_menuitems=true
 tooltip_shadow_depth=6
+tooltip_blur_radius=2
 splitter_width=7
 scroll_width=12
 scroll_min_extent=50
@@ -41,7 +43,6 @@ combo_focus_rect=true
 animate_states=true
 tree_branch_line=true
 transient_scrollbar=true
-dark_titlebar=true
 groupbox_top_label=true
 opaque=kaffeine,kmplayer,subtitlecomposer,kdenlive,vlc,smplayer,smplayer2,avidemux,avidemux2_qt4,avidemux3_qt4,avidemux3_qt5,kamoso,QtCreator,VirtualBox,VirtualBoxVM,trojita,dragon,digikam,lyx
 reduce_window_opacity=4
@@ -81,6 +82,7 @@ transparent_ktitle_label=true
 transparent_menutitle=false
 transparent_arrow_button=true
 lxqtmainmenu_iconsize=22
+no_selection_tint=true
 
 [PanelButtonCommand]
 frame=true
